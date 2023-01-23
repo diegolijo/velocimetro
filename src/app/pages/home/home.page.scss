@@ -1,0 +1,43 @@
+ion-segment-button{
+  min-width: 75px;
+  flex:1
+}
+
+.digitalMeter {
+  font-size: larger;
+  color: var(--ion-color-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1em;
+  #total {
+    width: 33%;
+    text-align: end;
+    margin-right: 15vw;
+  }
+}
+
+.meter-dimensions {
+  width: 100%;
+  font-size: small;
+  display: flex;
+  justify-content: space-evenly;
+  margin: 1em 15vw;
+}
+
+.eje {
+  margin-left: 1em;
+  min-width: 20%;
+}
+
+@media screen and (min-aspect-ratio: 317/565) {
+  .meter-dimensions {
+    display: none;
+  }
+}
+
+@media screen and (min-aspect-ratio: 315/517) {
+  .digitalMeter {
+    display: none;
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "velocimetro",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
