@@ -1,43 +1,22 @@
-ion-segment-button{
-  min-width: 75px;
-  flex:1
-}
-
-.digitalMeter {
-  font-size: larger;
-  color: var(--ion-color-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1em;
-  #total {
-    width: 33%;
-    text-align: end;
-    margin-right: 15vw;
-  }
-}
-
-.meter-dimensions {
-  width: 100%;
-  font-size: small;
+.kitt-container {
   display: flex;
   justify-content: space-evenly;
-  margin: 1em 15vw;
-}
+  margin-bottom: 2em;
 
-.eje {
-  margin-left: 1em;
-  min-width: 20%;
-}
+  #side-btns {
+    display: flex;
+    flex-direction: column;
+    font-weight: bolder;
+    font-size: 1.1em;
 
-@media screen and (min-aspect-ratio: 317/565) {
-  .meter-dimensions {
-    display: none;
+    ion-button {
+      --border-radius: 15px;
+      min-width: 4em;
+    }
   }
-}
 
-@media screen and (min-aspect-ratio: 315/517) {
-  .digitalMeter {
-    display: none;
+  #center-btns {
+    display: flex;
+    min-width: 40%;
   }
 }

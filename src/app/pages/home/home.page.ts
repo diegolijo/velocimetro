@@ -30,7 +30,7 @@ export class HomePage implements OnInit {
       return;
     }
     setInterval(() => {
-      this.deg = this.convertSpeedToDeg(Math.random() * 20);
+    //  this.deg = this.convertSpeedToDeg(Math.random() * 20);
     }, 100);
   }
 
