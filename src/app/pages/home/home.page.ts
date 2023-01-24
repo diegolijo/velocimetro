@@ -34,7 +34,7 @@ export class HomePage implements OnInit {
     }, 100);
   }
 
-  async initSubscribePosition() {
+  private async initSubscribePosition() {
     await this.location.locationHiAccuracyRequest();
     this.location.initWatchPosition();
     this.location.getPositionObservable().subscribe((value: any) => {
@@ -42,10 +42,9 @@ export class HomePage implements OnInit {
     });
   }
 
-  onUpdatePosition(value: any) {
-    this.deg = this.convertSpeedToDeg(value.coords.speed);
-    console.log(value.coords.speed);
-    debugger;
+  private onUpdatePosition(value: any) {
+    const kmH = value.coords.speed * 3.6;
+    this.deg = this.convertSpeedToDeg(kmH);
   }
 
   private convertSpeedToDeg(speed: number) {

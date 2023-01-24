@@ -28,6 +28,7 @@
     "@ionic/angular": "^6.1.9",
     "@ionic/cordova-builders": "^7.0.0",
     "@ionic/storage": "^3.0.6",
+    "cordova-android": "10.1.2",
     "ionicons": "^6.0.3",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
@@ -75,8 +76,12 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
-      "cordova-plugin-geolocation": {},
-      "cordova-plugin-request-location-accuracy": {},
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      },
+      "cordova-plugin-request-location-accuracy": {
+        "PLAY_SERVICES_LOCATION_VERSION": "16.+"
+      },
       "cordova-plugin-nativegeocoder": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
@@ -85,6 +90,8 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-fullscreen": {}
     },
-    "platforms": []
+    "platforms": [
+      "android"
+    ]
   }
 }
