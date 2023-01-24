@@ -6,10 +6,11 @@
   #side-btns {
     display: flex;
     flex-direction: column;
-    font-weight: bolder;
-    font-size: 1.1em;
+    justify-content: center;
 
     ion-button {
+      font-weight: bolder;
+      font-size: 1.1em;
       --border-radius: 15px;
       min-width: 4em;
     }
@@ -18,5 +19,20 @@
   #center-btns {
     display: flex;
     min-width: 40%;
+    flex-direction: column;
+
+    div{
+      min-height: 6em;
+    }
+
+    ion-button {
+      font-weight: bolder;
+      font-size: 1.1em;
+      --border-radius: 10px;
+      min-width: 6em;
+      min-height: 3em;
+    }
+
+
   }
 }
