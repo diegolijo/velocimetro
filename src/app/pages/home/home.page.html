@@ -1,4 +1,4 @@
-<app-analog-meter [WIDTH]="500" [dataIn]="deg" [top]="10" [right]="0">
+<app-analog-meter [WIDTH]="500" [dataIn]="deg" [top]="0" [right]="0">
 </app-analog-meter>
 <!-- <img src=".\assets\img\KITT.png" style="position: absolute; bottom: 2em;"> -->
 
@@ -6,29 +6,57 @@
   <div id="side-btns">
     <ion-button color="warning">AIR</ion-button>
     <ion-button color="warning">OIL</ion-button>
-    <ion-button color="danger">P1</ion-button>
-    <ion-button color="danger">P2</ion-button>
+    <ion-button [ngStyle]="{'opacity': kmH > 30 && kmH <50?  '100%': '40%'}" color="danger">
+      P1
+    </ion-button>
+    <ion-button [ngStyle]="{'opacity': kmH > 50 && kmH <90?  '100%': '40%'}" color="danger">
+      P2
+    </ion-button>
   </div>
   <div id="center-btns">
     <div>
       <div id="side-leds">
-        <div *ngFor="let item of [4,3,2,1,2,3,4]"></div>
+        <div *ngFor="let item of [7,6,5,4,3,2,1,2,3,4,5,6,7]" [ngStyle]="{
+            'background': aceleration.x / factorLed >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
+            'opacity': aceleration.x / factorLed >= item? 33 * (aceleration.x - item + 1)  + '%':'100%'
+          }">
+        </div> <!-- TODO opacity -->
       </div>
-      <div  id="center-leds">
-        <div *ngFor="let item of [8,7,6,5,4,3,2,1,1,2,3,4,5,6,7,8]"></div>
+      <div id="center-leds">
+        <div *ngFor="let item of [8,7,6,5,4,3,2,1,1,2,3,4,5,6,7,8]" [ngStyle]="{
+          'background': aceleration.z / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
+          'opacity': aceleration.z / factorLed >= item? 33 * (aceleration.z - item + 1)  + '%':'100%'
+        }"></div>
+        <!-- TODO opacity -->
       </div>
-      <div  id="side-leds">
-        <div *ngFor="let item of [4,3,2,1,2,3,4]"></div>
+      <div id="side-leds">
+        <div *ngFor="let item of [7,6,5,4,3,2,1,2,3,4,5,6,7]" [ngStyle]="{
+          'background': aceleration.y / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
+          'opacity': aceleration.y / factorLed >= item? 33 * (aceleration.y - item + 1)  + '%':'100%'
+        }">
+          <!-- TODO opacity -->
+        </div>
       </div>
     </div>
-    <ion-button color="warning">AUTO<br>CRUISE</ion-button>
-    <ion-button color="danger">NORMAL<br>CRUISE</ion-button>
-    <ion-button color="danger">PURSUIT</ion-button>
+    <ion-button color="warning" [ngStyle]="{'opacity': btnSelected ==='AUTOCRUISE'?  '100%': '40%'}"
+      (click)="onClickBtn($event)">AUTO<br>CRUISE</ion-button>
+    <ion-button color="danger" [ngStyle]="{'opacity': btnSelected ==='NORMALCRUISE'?  '100%': '40%'}"
+      (click)="onClickBtn($event)">NORMAL<br>CRUISE</ion-button>
+    <ion-button color="primary" [ngStyle]="{'opacity': btnSelected ==='PURSUIT'?  '100%': '40%'}"
+      (click)="onClickBtn($event)">PURSUIT</ion-button>
   </div>
   <div id="side-btns">
-    <ion-button color="warning">S1</ion-button>
-    <ion-button color="warning">S2</ion-button>
-    <ion-button color="danger">P2</ion-button>
-    <ion-button color="danger">P4</ion-button>
+    <ion-button color="warning">
+      S1
+    </ion-button>
+    <ion-button color="danger">
+      S2
+    </ion-button>
+    <ion-button [ngStyle]="{'opacity': kmH > 90  && kmH <120?  '100%': '40%'}" color="danger">
+      P3
+    </ion-button>
+    <ion-button [ngStyle]="{'opacity': kmH > 120 ?  '100%': '40%'}" color="danger">
+      P4
+    </ion-button>
   </div>
 </div>

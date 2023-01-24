@@ -5,6 +5,7 @@ import { AndroidFullScreen } from '@awesome-cordova-plugins/android-full-screen/
 import { IonSegment, Platform } from '@ionic/angular';
 import { LocationMngr } from '../../services/location-manager';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -16,6 +17,12 @@ export class HomePage implements OnInit {
   private static START_POSITION = -135;
   public deg = HomePage.START_POSITION;
 
+  public ledIndex = 0;
+  public factorLed = 1.14
+  public kmH = 160;
+  public btnSelected = 'AUTOCRUISE'
+  public aceleration: any = { x: 0, y: 0, z: 5 };
+
   constructor(
     private platform: Platform,
     private androidFullScreen: AndroidFullScreen,
@@ -26,12 +33,35 @@ export class HomePage implements OnInit {
     if (this.platform.is('cordova')) {
       await this.platform.ready();
       this.initSubscribePosition();
+      this.initSubscribeAcelerometer();
       await this.androidFullScreen.immersiveMode();
       return;
     }
     setInterval(() => {
-    //  this.deg = this.convertSpeedToDeg(Math.random() * 20);
-    }, 100);
+      this.ledIndex = Math.round(Math.random() * 8);
+    }, 200);
+  }
+
+
+
+  public onClickBtn(event: any) {
+    if (this.btnSelected === event.currentTarget.textContent) return;
+    this.btnSelected = event.currentTarget.textContent;
+    switch (event.currentTarget.textContent) {
+
+      case 'AUTOCRUISE':
+        this.btnSelected = event.currentTarget.textContent;
+        break;
+      case 'NORMALCRUISE':
+
+        break;
+      case 'PURSUIT':
+
+        break;
+
+      default:
+        break;
+    }
   }
 
   private async initSubscribePosition() {
@@ -43,14 +73,22 @@ export class HomePage implements OnInit {
   }
 
   private onUpdatePosition(value: any) {
-    const kmH = value.coords.speed * 3.6;
-    this.deg = this.convertSpeedToDeg(kmH);
+    this.kmH = value.coords.speed * 3.6;
+    this.deg = this.convertSpeedToDeg(this.kmH);
   }
 
   private convertSpeedToDeg(speed: number) {
     return HomePage.START_POSITION + (speed * 1.35);
   }
 
+  private initSubscribeAcelerometer() {
+    window.addEventListener("devicemotion", (event) => {
+      this.aceleration = event.acceleration || this.aceleration;
+      console.log(event.acceleration);
+      console.log(event);
+    }, true);
+
+  }
 
 
 }

@@ -41,7 +41,7 @@ export class LocationMngr {
 
     public stopGeolocating() {
         if (this.subscribePosition) {
-            //  this.geolocation.clearWatch(this.subscribePosition);
+           // this.geolocation.clearWatch(this.subscribePosition);  -> llamar al complemento cordova dirtectamente
         }
     }
 
