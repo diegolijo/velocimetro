@@ -17,7 +17,6 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     document.body.setAttribute('color-theme', 'dark');
-
     await this.platform.ready()
     await this.storage.init();
     // recuperamos datos guardados
@@ -25,7 +24,6 @@ export class AppComponent implements OnInit {
     setTimeout(() => {
       //this.splashScreen.hide();
     }, 1000);
-
   }
 
   private async getData() {
