@@ -21,7 +21,9 @@ export class HomePage implements OnInit {
   public factorLed = 1.14
   public kmH = 160;
   public btnSelected = 'AUTOCRUISE'
-  public aceleration: any = { x: 0, y: 0, z: 5 };
+  public x = 0;
+  public y = 0;
+  public z = 0
 
   constructor(
     private platform: Platform,
@@ -83,7 +85,11 @@ export class HomePage implements OnInit {
 
   private initSubscribeAcelerometer() {
     window.addEventListener("devicemotion", (event) => {
-      this.aceleration = event.acceleration || this.aceleration;
+      if (event.acceleration) {
+        this.x = Math.abs(event.acceleration.x || this.x);
+        this.y = Math.abs(event.acceleration.y || this.y);
+        this.z = Math.abs(event.acceleration.z || this.z);
+      }
       console.log(event.acceleration);
       console.log(event);
     }, true);

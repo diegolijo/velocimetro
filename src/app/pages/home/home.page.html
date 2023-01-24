@@ -17,22 +17,22 @@
     <div>
       <div id="side-leds">
         <div *ngFor="let item of [7,6,5,4,3,2,1,2,3,4,5,6,7]" [ngStyle]="{
-            'background': aceleration.x / factorLed >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
-            'opacity': aceleration.x / factorLed >= item? 33 * (aceleration.x - item + 1)  + '%':'100%'
+            'background': x / factorLed >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
+            'opacity': x / factorLed >= item? 33 * (x - item + 1)  + '%':'100%'
           }">
         </div> <!-- TODO opacity -->
       </div>
       <div id="center-leds">
         <div *ngFor="let item of [8,7,6,5,4,3,2,1,1,2,3,4,5,6,7,8]" [ngStyle]="{
-          'background': aceleration.z / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
-          'opacity': aceleration.z / factorLed >= item? 33 * (aceleration.z - item + 1)  + '%':'100%'
+          'background': z / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
+          'opacity': z / factorLed >= item? 33 * (z - item + 1)  + '%':'100%'
         }"></div>
         <!-- TODO opacity -->
       </div>
       <div id="side-leds">
         <div *ngFor="let item of [7,6,5,4,3,2,1,2,3,4,5,6,7]" [ngStyle]="{
-          'background': aceleration.y / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
-          'opacity': aceleration.y / factorLed >= item? 33 * (aceleration.y - item + 1)  + '%':'100%'
+          'background': y / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
+          'opacity': y / factorLed >= item? 33 * (y - item + 1)  + '%':'100%'
         }">
           <!-- TODO opacity -->
         </div>
