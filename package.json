@@ -1,8 +1,8 @@
 {
   "name": "velocimetro",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "version": "1.0.0",
+  "author": "Parrino",
+  "homepage": "https://www.vayapedal.com/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -103,8 +103,6 @@
       "cordova-plugin-android-permissions": {},
       "vosk-speech-to-text": {}
     },
-    "platforms": [
-      "android"
-    ]
+    "platforms": []
   }
 }

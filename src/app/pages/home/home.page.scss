@@ -1,8 +1,23 @@
+.btn-select {
+  width: 3em;
+  height: 3em;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  z-index: 1000000000;
+
+  ion-icon {
+    position: absolute;
+    font-size: 3em;
+  }
+}
+
 .kitt-container {
+  position: absolute;
   display: flex;
   justify-content: space-evenly;
-  margin-bottom: 2em;
-
+  bottom: 2em;
+  width: 100%;
   #side-btns {
     display: flex;
     flex-direction: column;
@@ -35,6 +50,7 @@
         width: 30%;
         display: flex;
         flex-direction: column;
+
         div {
           border-radius: 5px;
           min-width: 30px;
@@ -48,6 +64,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+
         div {
           border-radius: 5px;
           min-width: 25px;
@@ -65,18 +82,5 @@
       min-height: 50px;
       opacity: 40%;
     }
-  }
-}
-
-.btn-select {
-  max-width: 3em;
-  max-height: 3em;
-  position: absolute;
-  top: 1em;
-  left: 1em;
-  z-index: 1000000000;
-  ion-icon {
-    position: absolute;
-    font-size: 3em;
   }
 }

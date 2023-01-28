@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
 
   public ledIndex = 0;
   public factorLed = 1.14
-  public kmH = 160;
+  public kmH = 0;
   public btnSelected = 'AUTOCRUISE'
   public x = 0;
   public y = 0;

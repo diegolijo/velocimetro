@@ -1,0 +1,15 @@
+.digital-container {
+
+  .led-container {
+    display: flex;
+    height: 6em;
+    margin: 5em 1em 0em 1em;
+
+    #led {
+      height: 2.5em;
+      width: 2em;
+      margin-right: 2px;
+    }
+  }
+
+}

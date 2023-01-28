@@ -1,6 +1,11 @@
-<app-analog-meter [WIDTH]="500" [dataIn]="deg" [top]="0" [right]="0">
-</app-analog-meter>
 <!-- <img src=".\assets\img\KITT.png" style="position: absolute; bottom: 2em;"> -->
+<app-analog-meter [WIDTH]="500" [dataIn]="deg" [top]="0" [right]="0" *ngIf="false">
+</app-analog-meter>
+
+<app-digital-meter [dataIn]="kmH">
+
+</app-digital-meter>
+
 
 <ion-select #selectRef mode="md" interface="action-sheet" style="display:none" (ionChange)="onChangeVoice($event)"
   placeholder="Idioma" okText="Ok" cancelText="Cancelar" [(ngModel)]="selectedVoice" [value]="selectedVoice">
@@ -8,7 +13,7 @@
 </ion-select>
 
 <ion-button fill="clear" class="btn-select" color="warning" (click)="onClickSelect()">
-  <ion-icon name="menu-outline"></ion-icon>
+  <ion-icon name="settings-sharp"></ion-icon>
 </ion-button>
 
 <div class="kitt-container">
@@ -27,23 +32,19 @@
       <div id="side-leds">
         <div *ngFor="let item of [8,7,6,5,4,3,2,1,2,3,4,5,6,7,8]" [ngStyle]="{
             'background': x / factorLed >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
-            'opacity': x / factorLed >= item? 33 * (x - item + 1)  + '%':'100%'
-          }">
-        </div> <!-- TODO opacity -->
+            'opacity': x / factorLed >= item? 33 * (x - item + 1)  + '%':'100%'}">
+        </div>
       </div>
       <div id="center-leds">
         <div *ngFor="let item of [8,7,6,5,4,3,2,1,1,2,3,4,5,6,7,8]" [ngStyle]="{
           'background': z / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
-          'opacity': z / factorLed >= item? 33 * (z - item + 1)  + '%':'100%'
-        }"></div>
-        <!-- TODO opacity -->
+          'opacity': z / factorLed >= item? 33 * (z - item + 1)  + '%':'100%'}">
+        </div>
       </div>
       <div id="side-leds">
         <div *ngFor="let item of [8,7,6,5,4,3,2,1,2,3,4,5,6,7,8]" [ngStyle]="{
           'background': y / factorLed  >= item? 'var(--ion-color-danger)':'var(--ion-color-medium)',
-          'opacity': y / factorLed >= item? 33 * (y - item + 1)  + '%':'100%'
-        }">
-          <!-- TODO opacity -->
+          'opacity': y / factorLed >= item? 33 * (y - item + 1)  + '%':'100%'}">
         </div>
       </div>
     </div>
