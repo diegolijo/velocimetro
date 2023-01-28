@@ -12,6 +12,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LocationMngr } from './services/location-manager';
 import { ProStorage } from './services/storage-provider';
+import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,6 +31,8 @@ import { ProStorage } from './services/storage-provider';
     LocationAccuracy,
     AndroidFullScreen,
     SpeechToText,
+    NativeAudio,
+    AndroidPermissions,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

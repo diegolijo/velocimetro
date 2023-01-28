@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AndroidFullScreen } from '@awesome-cordova-plugins/android-full-screen/ngx';
-import { IonSegment, Platform } from '@ionic/angular';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
+import { IonSelect, Platform } from '@ionic/angular';
 import { SpeechToText } from 'angular-speech-to-text';
 import { LocationMngr } from '../../services/location-manager';
+
+export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number; }
 
 
 @Component({
@@ -13,8 +16,7 @@ import { LocationMngr } from '../../services/location-manager';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-
-  @ViewChild('segment', { static: true }) segment!: IonSegment;
+  @ViewChild('selectRef', { static: true }) selectRef!: IonSelect;
   private static START_POSITION = -135;
   public deg = HomePage.START_POSITION;
 
@@ -26,23 +28,29 @@ export class HomePage implements OnInit {
   public y = 0;
   public z = 0
   public module = 0;
-  langs: any;
+  private bussy = false
+  private DEFAULT_LANG = 'es';
+  private ES = 'vosk-model-small-es-0.42';
+  public voices: IVoice[] = [];
+  public selectedVoice: string = '';
 
   constructor(
     private platform: Platform,
-    private androidFullScreen: AndroidFullScreen,
     private location: LocationMngr,
-    private speechToText: SpeechToText
+    private speechToText: SpeechToText,
+    private audio: NativeAudio,
+    private androidPermissions: AndroidPermissions
   ) { }
 
   async ngOnInit() {
     try {
       if (this.platform.is('cordova')) {
         await this.platform.ready();
+        this.requestPermissions()
         this.initSubscribePosition();
         this.initSubscribeAcelerometer();
-       // this.initSubscribeSpeechToText();
-        await this.androidFullScreen.immersiveMode();
+        this.initSubscribeSpeechToText();
+        await this.loadAudioSamples();
         return;
       }
       setInterval(() => {
@@ -53,23 +61,45 @@ export class HomePage implements OnInit {
     }
   }
 
+
   public onClickBtn(event: any) {
     if (this.btnSelected === event.currentTarget.textContent) return;
     this.btnSelected = event.currentTarget.textContent;
     switch (event.currentTarget.textContent) {
-
       case 'AUTOCRUISE':
         this.btnSelected = event.currentTarget.textContent;
         break;
       case 'NORMALCRUISE':
-
+        this.speechToText.stopSpeech();
         break;
       case 'PURSUIT':
-
+        this.speechToText.startSpeech();
         break;
 
       default:
         break;
+    }
+  }
+
+  public onClickSelect() {
+    this.selectRef.open();
+  }
+
+
+  async onChangeVoice(event: any) {
+    this.selectedVoice = event.detail.value;
+    // await this.translate.reloadLang(lang);
+    this.speechToText.setSpeechVoice(this.selectedVoice);
+  }
+
+
+  async requestPermissions() {
+    const result = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO);
+    const result2 = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT);
+    if (result.hasPermission === false) {
+      // grabar micro para pedir permisos;
+    } else {
+      console.log('permissions ok')
     }
   }
 
@@ -104,38 +134,132 @@ export class HomePage implements OnInit {
   private async initSubscribeSpeechToText() {
     this.subscribeToSpeech();
     const downloaded = await this.speechToText.getDownloadedLanguages();
-    if (downloaded.length && downloaded[0] === 'vosk-model-small-es-0.3') {
+    if (downloaded.length && downloaded[0] === this.ES) {
       console.log('downloaded: ' + downloaded[0]);
-      /*       await this.speechToText.enableSpeech('es');
-            await this.speechToText.startSpeech(); */
+      await this.speechToText.enableSpeech(this.DEFAULT_LANG);
+      await this.speechToText.startSpeech();
+      this.voices = await this.speechToText.getSpeechVoices();
     } else {
-
       this.subscribeToDownload();
-      await this.speechToText.download('es');
+      this.speechToText.download(this.DEFAULT_LANG);
     }
+  }
+
+  private async subscribeToSpeech() {
+    this.speechToText.subscrbeToSpeech(
+      'speech',
+      async (value: any) => {
+        console.log(JSON.stringify(value))
+        //*****STT****
+        if (value.parcial && !this.bussy) {
+          switch (value.parcial || value.texto) {
+            case 'que':
+              this.bussy = true;
+              this.speechToText.speechText('Dime maiquel? ¿que tal estas?')
+              break;
+            case 'kit':
+              this.bussy = true;
+              this.speechToText.speechText('Dime maiquel? ¿que tal estas?')
+              break;
+            default:
+              break;
+          }
+        }
+
+      },
+      (err: any) => {
+        console.log(err);
+      },
+      (progress: any) => {  // **** TTS ****
+        console.log(progress);
+        switch (progress.result) {
+          case 'speech start':
+            this.speechToText.stopSpeech();
+            break;
+          case 'speech done':
+            this.speechToText.startSpeech();
+            this.bussy = false;
+            break;
+          case 'speech error':
+            break;
+          default:
+            break;
+        }
+      });
   }
 
   private subscribeToDownload() {
     this.speechToText.subscrbeToDownload('download',
       async (value: any) => {
-        console.log('download events: ' + value)
-        /*         await this.speechToText.enableSpeech('es');
-                await this.speechToText.startSpeech(); */
+        console.log('download events: ' + JSON.stringify(value))
+        switch (value.result) {
+          case 'start':
+            // TODO
+            break;
+          case 'vosk_model_extracting':
+            // TODO
+            break;
+          case 'vosk_model_save':
+            await this.speechToText.enableSpeech(this.DEFAULT_LANG);
+            await this.speechToText.startSpeech();
+            break;
+          default:
+            break;
+        }
       }, (err: any) => {
         console.log('err download: ' + err);
       });
   }
 
-  private subscribeToSpeech() {
-    this.speechToText.subscrbeToSpeech(
-      'speech',
-      (value: any) => {
-        console.log(value);
-      },
-      (err: any) => {
+  /******************************************** AUDIO *************************************/
+
+  public loadAudioSamples() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (this.platform.is('cordova')) {
+          await this.audio.preloadComplex('DIME', 'assets/sounds/DIME.mp3', 1, 1, 0);
+        }
+        resolve(true);
+      } catch (err) {
         console.log(err);
-      });
+        resolve(false);
+      }
+    });
   }
+
+  public async play(value: string) {
+    try {
+      if (this.platform.is('cordova')) {
+        this.bussy = true;
+        await this.audio.play(value);
+        this.bussy = false;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  //************************************** DISTANCIAS *************************************/
+
+  private degToRad(grados: number) {
+    return grados * Math.PI / 180;
+  };
+
+
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    // Convertir todas las coordenadas a radianes
+    lat1 = this.degToRad(lat1);
+    lon1 = this.degToRad(lon1);
+    lat2 = this.degToRad(lat2);
+    lon2 = this.degToRad(lon2);
+    // Aplicar fórmula
+    const RADIO_TIERRA_EN_KILOMETROS = 6371;
+    let diferenciaEntreLongitudes = (lon2 - lon1);
+    let diferenciaEntreLatitudes = (lat2 - lat1);
+    let a = Math.pow(Math.sin(diferenciaEntreLatitudes / 2.0), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(diferenciaEntreLongitudes / 2.0), 2);
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return RADIO_TIERRA_EN_KILOMETROS * c;
+  };
 
 }
 

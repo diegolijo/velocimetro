@@ -67,3 +67,16 @@
     }
   }
 }
+
+.btn-select {
+  max-width: 3em;
+  max-height: 3em;
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  z-index: 1000000000;
+  ion-icon {
+    position: absolute;
+    font-size: 3em;
+  }
+}
