@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
 
   public ledIndex = 0;
   public factorLed = 1.14
-  public kmH = 0;
+  public kmH = 195;
   public btnSelected = 'AUTOCRUISE'
   public x = 0;
   public y = 0;
@@ -51,6 +51,7 @@ export class HomePage implements OnInit {
         this.initSubscribeAcelerometer();
         this.initSubscribeSpeechToText();
         await this.loadAudioSamples();
+        this.voices = await this.speechToText.getSpeechVoices();
         return;
       }
       setInterval(() => {
@@ -75,7 +76,6 @@ export class HomePage implements OnInit {
       case 'PURSUIT':
         this.speechToText.startSpeech();
         break;
-
       default:
         break;
     }
@@ -85,13 +85,11 @@ export class HomePage implements OnInit {
     this.selectRef.open();
   }
 
-
   async onChangeVoice(event: any) {
     this.selectedVoice = event.detail.value;
     // await this.translate.reloadLang(lang);
     this.speechToText.setSpeechVoice(this.selectedVoice);
   }
-
 
   async requestPermissions() {
     const result = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO);
@@ -138,7 +136,6 @@ export class HomePage implements OnInit {
       console.log('downloaded: ' + downloaded[0]);
       await this.speechToText.enableSpeech(this.DEFAULT_LANG);
       await this.speechToText.startSpeech();
-      this.voices = await this.speechToText.getSpeechVoices();
     } else {
       this.subscribeToDownload();
       this.speechToText.download(this.DEFAULT_LANG);

@@ -103,6 +103,8 @@
       "cordova-plugin-android-permissions": {},
       "vosk-speech-to-text": {}
     },
-    "platforms": []
+    "platforms": [
+      "android"
+    ]
   }
 }

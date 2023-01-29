@@ -13,3 +13,20 @@
   }
 
 }
+
+.digital-vel {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2em;
+  margin-left: 1em;
+
+  .seven-segment {
+    font-size: 6em;
+    color: var(--ion-color-danger);
+    font-family: 'SevenSegment' !important;
+    min-width: 25px;
+  }
+
+}

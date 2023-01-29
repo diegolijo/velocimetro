@@ -6,7 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./digital-meter.component.scss'],
 })
 export class DigitalMeterComponent implements OnInit {
-  kmH: number = 0;
+  kmH: any = { t: 0, c: 0, d: 0, u: 0 };
   arrLeds = [
     { value: 1, margin: 0, deg: 0 },
     { value: 2, margin: 0, deg: 0 },
@@ -50,14 +50,19 @@ export class DigitalMeterComponent implements OnInit {
   @Input()
   set dataIn(value: any) {
     try {
-      this.kmH = value;
+      this.kmH.t = value;
+      this.kmH.c = Math.floor(value / 100);
+      const dec =  value / 100 - Math.trunc(value / 100);
+      this.kmH.d = 10 * Number.parseFloat((dec).toFixed(1));
+      const un =  value / 10 - Math.trunc(value / 10);
+      this.kmH.u = 10 * Number.parseFloat((un).toFixed(1));
     } catch (err) {
       console.log(err);
     }
   }
 
   getDegValue(deg: number) {
-    console.log('deg: '+ deg * 2);
+    console.log('deg: ' + deg * 2);
     return deg * 2;
   }
 
