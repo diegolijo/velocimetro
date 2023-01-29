@@ -3,7 +3,7 @@
   <div class="led-container">
     <div id="led" *ngFor="let led of arrLeds" [ngStyle]="{
         'background': led.value<12? 'var(--ion-color-success)': led.value<24 ?'var(--ion-color-warning)':'var(--ion-color-danger)',
-        'opacity': kmH < led.value * 5 ? '40%':'100%',
+        'opacity': kmH.t < led.value * 5 ? '40%':'100%',
         'transform': 'skew(360deg,'+ led.deg +'deg)',
         'margin-top.px': led.margin}">
     </div>
