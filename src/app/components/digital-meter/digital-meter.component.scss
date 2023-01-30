@@ -1,5 +1,4 @@
 .digital-container {
-
   .led-container {
     display: flex;
     height: 6em;
@@ -11,7 +10,6 @@
       margin-right: 2px;
     }
   }
-
 }
 
 .digital-vel {
@@ -20,13 +18,78 @@
   align-items: center;
   justify-content: center;
   margin-top: -2em;
-  margin-left: 1em;
+  margin-left: 2.2em;
 
   .seven-segment {
     font-size: 6em;
     color: var(--ion-color-danger);
-    font-family: 'SevenSegment' !important;
-    min-width: 25px;
+    font-family: "SevenSegment" !important;
+    min-width: 50px;
+    text-align: end;
+  }
+}
+
+.reloj {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 6em;
+  position: absolute;
+  top: 1em;
+  right: 0.2em;
+
+  .horas {
+    font-size: 2em;
+    color: var(--ion-color-success);
+    font-family: "SevenSegment" !important;
+    min-width: 32px;
+    text-align: end;
+  }
+  .minutos {
+    font-size: 2em;
+    color: var(--ion-color-success);
+    font-family: "SevenSegment" !important;
+    min-width: 32px;
+    text-align: end;
   }
 
+  .points {
+    font-size: 2em;
+    color: var(--ion-color-success);
+  }
+
+  .blink {
+    -webkit-animation: blink 1s linear infinite;
+    -moz-animation: blink 1s linear infinite;
+    animation: blink 1s linear infinite;
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 1;
+    }
+    51% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @-webkit-keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 1;
+    }
+    51% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 }

@@ -1,18 +1,22 @@
 <div class="digital-container">
-
   <div class="led-container">
     <div id="led" *ngFor="let led of arrLeds" [ngStyle]="{
         'background': led.value<12? 'var(--ion-color-success)': led.value<24 ?'var(--ion-color-warning)':'var(--ion-color-danger)',
-        'opacity': kmH.t < led.value * 5 ? '40%':'100%',
+        'opacity': kmH < led.value * 5 ? '40%':'100%',
         'transform': 'skew(360deg,'+ led.deg +'deg)',
         'margin-top.px': led.margin}">
     </div>
   </div>
 
   <div class="digital-vel">
-    <div class="seven-segment">{{kmH.c}}</div>
-    <div class="seven-segment">{{kmH.d}}</div>
-    <div class="seven-segment">{{kmH.u}}</div>
+    <div class="seven-segment">{{speedArr[0]}}</div>
+    <div class="seven-segment">{{speedArr[1]}}</div>
+    <div class="seven-segment">{{speedArr[2]}}</div>
   </div>
+</div>
 
+<div class="reloj">
+  <div class="horas">{{time[0]}}</div>
+  <div class="points blink">:</div>
+  <div class="minutos">{{time[1]}}</div>
 </div>

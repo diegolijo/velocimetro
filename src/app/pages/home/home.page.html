@@ -8,7 +8,7 @@
 
 <ion-select #selectRef mode="md" interface="action-sheet" style="display:none" (ionChange)="onChangeVoice($event)"
   placeholder="Idioma" okText="Ok" cancelText="Cancelar" [(ngModel)]="selectedVoice" [value]="selectedVoice">
-  <ion-select-option [value]="voice.name" *ngFor="let voice of voices">{{voice.name}}</ion-select-option>
+  <ion-select-option [value]="voice.name" *ngFor="let voice of voices">{{voice.name}} - {{voice.locale}}</ion-select-option>
 </ion-select>
 
 <ion-button fill="clear" class="btn-select" color="warning" (click)="onClickSelect()">
@@ -47,9 +47,9 @@
         </div>
       </div>
     </div>
-    <ion-button color="warning" [ngStyle]="{'opacity': btnSelected ==='AUTOCRUISE'?  '100%': '40%'}"
+    <ion-button color="tertiary" [ngStyle]="{'opacity': btnSelected ==='AUTOCRUISE'?  '100%': '40%'}"
       (click)="onClickBtn($event)">AUTO<br>CRUISE</ion-button>
-    <ion-button color="danger" [ngStyle]="{'opacity': btnSelected ==='NORMALCRUISE'?  '100%': '40%'}"
+    <ion-button color="warning" [ngStyle]="{'opacity': btnSelected ==='NORMALCRUISE'?  '100%': '40%'}"
       (click)="onClickBtn($event)">NORMAL<br>CRUISE</ion-button>
     <ion-button color="primary" [ngStyle]="{'opacity': btnSelected ==='PURSUIT'?  '100%': '40%'}"
       (click)="onClickBtn($event)">PURSUIT</ion-button>

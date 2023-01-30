@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-digital-meter',
@@ -6,7 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./digital-meter.component.scss'],
 })
 export class DigitalMeterComponent implements OnInit {
-  kmH: any = { t: 0, c: 0, d: 0, u: 0 };
+  kmH: any = 0;
   arrLeds = [
     { value: 1, margin: 0, deg: 0 },
     { value: 2, margin: 0, deg: 0 },
@@ -38,24 +39,29 @@ export class DigitalMeterComponent implements OnInit {
     { value: 28, margin: 0, deg: 0 },
   ];
   public factor = 2000;
+
+  public time = ['00', '00'];
+  public speedArr = ['0', '0', '0'];
+
   constructor() { }
 
   ngOnInit() {
+    const widthFactor = 470 / window.innerWidth
     for (const led of this.arrLeds) {
       led.margin = this.getPxToTop(led.value - 18);
-      led.deg = this.getDegValue(led.value - 18);
+      led.deg = this.getDegValue((led.value - 18) * widthFactor);
     }
+    this.initClock();
   }
 
   @Input()
   set dataIn(value: any) {
     try {
-      this.kmH.t = value > 0 ? value : 0;
-      this.kmH.c = Math.floor(this.kmH.t / 100);
-      const dec = this.kmH.t / 100 - Math.trunc(this.kmH.t / 100);
-      this.kmH.d = 10 * Number.parseFloat((dec).toFixed(1));
-      const un = this.kmH.t / 10 - Math.trunc(this.kmH.t / 10);
-      this.kmH.u = 10 * Number.parseFloat((un).toFixed(1));
+      this.kmH = value > 0 ? value : 0;
+      this.speedArr = this.kmH.toString().split('');
+      for (let index = this.speedArr.length; index < 3; index++) {
+        this.speedArr.unshift('0');
+      }
     } catch (err) {
       console.log(err);
     }
@@ -71,4 +77,19 @@ export class DigitalMeterComponent implements OnInit {
     console.log('margin: ' + cos);
     return cos;
   }
+
+  //******************************** RELOJ ******************************/
+
+  private initClock() {
+    this.time[0] = format(new Date(), 'HH');
+    this.time[1] = format(new Date(), 'mm');
+    this.time[2] = format(new Date(), 'ss');
+    setInterval(() => {
+      this.time[0] = format(new Date(), 'HH');
+      this.time[1] = format(new Date(), 'mm');
+      this.time[2] = format(new Date(), 'ss');
+    }, 1000)
+  }
+
+
 }

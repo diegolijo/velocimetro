@@ -7,6 +7,7 @@ import { IonSelect, Platform } from '@ionic/angular';
 import { SpeechToText } from 'angular-speech-to-text';
 import { LocationMngr } from '../../services/location-manager';
 
+
 export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number; }
 
 
@@ -23,7 +24,7 @@ export class HomePage implements OnInit {
   public ledIndex = 0;
   public factorLed = 1.14
   public kmH = 0;
-  public btnSelected = 'AUTOCRUISE'
+  public btnSelected = 'NORMALCRUISE'
   public x = 0;
   public y = 0;
   public z = 0
@@ -33,6 +34,7 @@ export class HomePage implements OnInit {
   private ES = 'vosk-model-small-es-0.42';
   public voices: IVoice[] = [];
   public selectedVoice: string = '';
+
 
   constructor(
     private platform: Platform,
@@ -56,19 +58,19 @@ export class HomePage implements OnInit {
       }
       setInterval(() => {
         this.ledIndex = Math.round(Math.random() * 8);
+        // this.kmH += 1;
       }, 200);
     } catch (err) {
       console.log(err);
     }
   }
 
-
   public onClickBtn(event: any) {
     if (this.btnSelected === event.currentTarget.textContent) return;
     this.btnSelected = event.currentTarget.textContent;
     switch (event.currentTarget.textContent) {
       case 'AUTOCRUISE':
-        this.btnSelected = event.currentTarget.textContent;
+        this.speechToText.stopSpeech();
         break;
       case 'NORMALCRUISE':
         this.speechToText.stopSpeech();
@@ -110,7 +112,7 @@ export class HomePage implements OnInit {
   }
 
   private onUpdatePosition(value: any) {
-    this.kmH = value.coords.speed * 3.6;
+    this.kmH = parseInt((value.coords.speed * 3.6).toFixed(), 10);
     this.deg = this.convertSpeedToDeg(this.kmH);
   }
 
@@ -131,6 +133,7 @@ export class HomePage implements OnInit {
 
   private async initSubscribeSpeechToText() {
     this.subscribeToSpeech();
+    // **** STT ****
     const downloaded = await this.speechToText.getDownloadedLanguages();
     if (downloaded.length && downloaded[0] === this.ES) {
       console.log('downloaded: ' + downloaded[0]);
@@ -140,6 +143,9 @@ export class HomePage implements OnInit {
       this.subscribeToDownload();
       this.speechToText.download(this.DEFAULT_LANG);
     }
+     // **** TTS ****
+     // TODO this.speechToText.setPtch()
+
   }
 
   private async subscribeToSpeech() {
@@ -148,8 +154,8 @@ export class HomePage implements OnInit {
       async (value: any) => {
         console.log(JSON.stringify(value))
         //*****STT****
-        if (value.parcial && !this.bussy) {
-          switch (value.parcial || value.texto) {
+        if (!this.bussy) {
+          switch (value.parcial) {
             case 'que':
               this.bussy = true;
               this.speechToText.speechText('Dime maiquel? ¿que tal estas?')
@@ -161,8 +167,10 @@ export class HomePage implements OnInit {
             default:
               break;
           }
+          if (value.texto) {
+            this.speechToText.speechText(value.texto)
+          }
         }
-
       },
       (err: any) => {
         console.log(err);
@@ -257,6 +265,7 @@ export class HomePage implements OnInit {
     let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return RADIO_TIERRA_EN_KILOMETROS * c;
   };
+
 
 }
 

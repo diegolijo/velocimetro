@@ -14,6 +14,7 @@ import { LocationMngr } from './services/location-manager';
 import { ProStorage } from './services/storage-provider';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { IA } from './services/IA';
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,6 +34,7 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
     SpeechToText,
     NativeAudio,
     AndroidPermissions,
+    IA,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
