@@ -16,7 +16,6 @@ export class AppComponent implements OnInit {
     //  private splashScreen: SplashScreen,
     private androidFullScreen: AndroidFullScreen,
     public storage: ProStorage,
-    private http: HttpManager
   ) { }
 
   async ngOnInit() {
@@ -28,7 +27,6 @@ export class AppComponent implements OnInit {
     await this.storage.init();
     // recuperamos datos guardados
     await this.getData();
-    this.http.get('https://www.wordreference.com/definicion/cipote');
     setTimeout(() => {
       //this.splashScreen.hide();
     }, 1000);

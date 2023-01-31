@@ -41,7 +41,7 @@ export class LocationMngr {
 
     public stopGeolocating() {
         if (this.subscribePosition) {
-           // this.geolocation.clearWatch(this.subscribePosition);  -> llamar al complemento cordova dirtectamente
+            // this.geolocation.clearWatch(this.subscribePosition);  -> llamar al complemento cordova dirtectamente
         }
     }
 
@@ -82,7 +82,20 @@ export class LocationMngr {
         } catch (err) {
             return null;
         }
+    }
 
+    public async reverseGeocode(lat: number, long: number) {
+        try {
+            const options: NativeGeocoderOptions = {
+                useLocale: true,
+                maxResults: 5
+            };
+            const res = await this.nativeGeocoder.reverseGeocode(lat, long, options);
+            console.log(res);
+            return res;
+        } catch (err) {
+            return null;
+        }
     }
 
 }

@@ -5,6 +5,7 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { IonSelect, Platform } from '@ionic/angular';
 import { SpeechToText } from 'angular-speech-to-text';
+import { IResponse, MongerIA } from 'src/app/services/monger-ia';
 import { LocationMngr } from '../../services/location-manager';
 
 
@@ -34,6 +35,10 @@ export class HomePage implements OnInit {
   private ES = 'vosk-model-small-es-0.42';
   public voices: IVoice[] = [];
   public selectedVoice: string = '';
+  private adress: any;
+  public lat = 0;
+  public long = 0;
+  public alt = 0;
 
 
   constructor(
@@ -41,7 +46,8 @@ export class HomePage implements OnInit {
     private location: LocationMngr,
     private speechToText: SpeechToText,
     private audio: NativeAudio,
-    private androidPermissions: AndroidPermissions
+    private androidPermissions: AndroidPermissions,
+    private mongerIa: MongerIA
   ) { }
 
   async ngOnInit() {
@@ -60,6 +66,7 @@ export class HomePage implements OnInit {
         this.ledIndex = Math.round(Math.random() * 8);
         // this.kmH += 1;
       }, 200);
+      await this.mongerIa.processSpeechResult('vaya');
     } catch (err) {
       console.log(err);
     }
@@ -70,6 +77,7 @@ export class HomePage implements OnInit {
     this.btnSelected = event.currentTarget.textContent;
     switch (event.currentTarget.textContent) {
       case 'AUTOCRUISE':
+        this.onClickDireccion()
         this.speechToText.stopSpeech();
         break;
       case 'NORMALCRUISE':
@@ -93,7 +101,13 @@ export class HomePage implements OnInit {
     this.speechToText.setSpeechVoice(this.selectedVoice);
   }
 
-  async requestPermissions() {
+  public async onClickDireccion() {
+    this.adress = await this.location.reverseGeocode(this.lat, this.long);
+    console.log(this.adress[0].addressLines[0]);
+    this.speechToText.speechText('estamos en, ' + this.adress[0].addressLines[0]);
+  }
+
+  private async requestPermissions() {
     const result = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO);
     const result2 = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT);
     if (result.hasPermission === false) {
@@ -112,12 +126,11 @@ export class HomePage implements OnInit {
   }
 
   private onUpdatePosition(value: any) {
+    this.lat = value.coords.latitude;
+    this.long = value.coords.longitude;
+    this.alt = value.coords.altitude;
     this.kmH = parseInt((value.coords.speed * 3.6).toFixed(), 10);
-    this.deg = this.convertSpeedToDeg(this.kmH);
-  }
-
-  private convertSpeedToDeg(speed: number) {
-    return HomePage.START_POSITION + (speed * 1.35);
+    this.deg = HomePage.START_POSITION + (this.kmH * 1.35); //TODO mover a analog-meter.component 
   }
 
   private initSubscribeAcelerometer() {
@@ -143,14 +156,13 @@ export class HomePage implements OnInit {
       this.subscribeToDownload();
       this.speechToText.download(this.DEFAULT_LANG);
     }
-     // **** TTS ****
-     // TODO this.speechToText.setPtch()
-
+    // **** TTS ****
+    // TODO this.speechToText.setPtch()
   }
 
   private async subscribeToSpeech() {
     this.speechToText.subscrbeToSpeech(
-      'speech',
+      'home',
       async (value: any) => {
         console.log(JSON.stringify(value))
         //*****STT****
@@ -168,7 +180,9 @@ export class HomePage implements OnInit {
               break;
           }
           if (value.texto) {
-            this.speechToText.speechText(value.texto)
+            this.bussy = true;
+            const response: IResponse = await this.mongerIa.processSpeechResult(value.texto)
+            this.speechToText.speechText(response.todas)
           }
         }
       },
@@ -182,8 +196,10 @@ export class HomePage implements OnInit {
             this.speechToText.stopSpeech();
             break;
           case 'speech done':
-            this.speechToText.startSpeech();
-            this.bussy = false;
+            setTimeout(() => {
+              this.speechToText.startSpeech();
+              this.bussy = false;
+            }, 100);
             break;
           case 'speech error':
             break;
