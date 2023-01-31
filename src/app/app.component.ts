@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AndroidFullScreen } from '@awesome-cordova-plugins/android-full-screen/ngx';
 import { Platform } from '@ionic/angular';
+import { HttpManager } from './services/http-provider';
 import { ProStorage } from './services/storage-provider';
 
 @Component({
@@ -12,9 +13,10 @@ export class AppComponent implements OnInit {
 
   constructor(
     private platform: Platform,
-    //  private splashScreen: SplashScreen,    
+    //  private splashScreen: SplashScreen,
     private androidFullScreen: AndroidFullScreen,
-    public storage: ProStorage
+    public storage: ProStorage,
+    private http: HttpManager
   ) { }
 
   async ngOnInit() {
@@ -26,6 +28,7 @@ export class AppComponent implements OnInit {
     await this.storage.init();
     // recuperamos datos guardados
     await this.getData();
+    this.http.get('https://www.wordreference.com/definicion/cipote');
     setTimeout(() => {
       //this.splashScreen.hide();
     }, 1000);
