@@ -93,3 +93,11 @@
     }
   }
 }
+
+.contador-distancia {
+  font-family: "SevenSegment" !important;
+  position: absolute;
+  left: 4em;
+  margin-top: -2em;
+  color: var(--ion-color-danger);
+}

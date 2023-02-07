@@ -2,13 +2,14 @@
 <app-analog-meter [WIDTH]="500" [dataIn]="deg" [top]="0" [right]="0" *ngIf="false">
 </app-analog-meter>
 
-<app-digital-meter [dataIn]="kmH">
+<app-digital-meter [dataIn]="kmH" [distanceTraveled]="distanceTraveled">
 </app-digital-meter>
 
 
 <ion-select #selectRef mode="md" interface="action-sheet" style="display:none" (ionChange)="onChangeVoice($event)"
   placeholder="Idioma" okText="Ok" cancelText="Cancelar" [(ngModel)]="selectedVoice" [value]="selectedVoice">
-  <ion-select-option [value]="voice.name" *ngFor="let voice of voices">{{voice.name}} - {{voice.locale}}</ion-select-option>
+  <ion-select-option [value]="voice.name" *ngFor="let voice of voices">{{voice.name}} - {{voice.locale}}
+  </ion-select-option>
 </ion-select>
 
 <ion-button fill="clear" class="btn-select" color="warning" (click)="onClickSelect()">
@@ -17,8 +18,8 @@
 
 <div class="kitt-container">
   <div id="side-btns">
-    <ion-button color="warning">AIR</ion-button>
-    <ion-button color="warning">OIL</ion-button>
+    <ion-button color="warning" (click)="onClickClearDistance()">AIR</ion-button>
+    <ion-button color="warning" (click)="onClickDireccion()">OIL</ion-button>
     <ion-button [ngStyle]="{'opacity': kmH > 30 && kmH <50?  '100%': '40%'}" color="danger">
       P1
     </ion-button>

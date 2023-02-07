@@ -17,6 +17,10 @@ import { HttpManager } from './services/http-provider';
 import { LocationMngr } from './services/location-manager';
 import { MongerIA } from './services/monger-ia';
 import { ProStorage } from './services/storage-provider';
+import { HTTP } from '@awesome-cordova-plugins/http/ngx';
+import { Util } from './services/util';
+import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
+import { UserData } from './services/UserData';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,6 +43,10 @@ import { ProStorage } from './services/storage-provider';
     AndroidPermissions,
     MongerIA,
     HttpManager,
+    HTTP,
+    Util,
+    NativeStorage,
+    UserData,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

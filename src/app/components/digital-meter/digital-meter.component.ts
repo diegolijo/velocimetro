@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-ordering */
 import { Component, Input, OnInit } from '@angular/core';
 import { format } from 'date-fns';
 
@@ -42,11 +43,12 @@ export class DigitalMeterComponent implements OnInit {
 
   public time = ['00', '00'];
   public speedArr = ['0', '0', '0'];
+  public meters = 0;
 
   constructor() { }
 
   ngOnInit() {
-    const widthFactor = 470 / window.innerWidth
+    const widthFactor = 470 / window.innerWidth;
     for (const led of this.arrLeds) {
       led.margin = this.getPxToTop(led.value - 18);
       led.deg = this.getDegValue((led.value - 18) * widthFactor);
@@ -63,18 +65,28 @@ export class DigitalMeterComponent implements OnInit {
         this.speedArr.unshift('0');
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
+    }
+  }
+
+  @Input()
+  set distanceTraveled(value: any) {
+    try {
+      this.meters = value;
+      console.log(value);
+    } catch (err) {
+      //console.log(err);
     }
   }
 
   public getDegValue(deg: number) {
-    console.log('deg: ' + deg * 2);
+    //console.log('deg: ' + deg * 2);
     return deg * 2;
   }
 
   public getPxToTop(deg: number) {
     const cos = this.factor - Math.cos(deg / (180 / Math.PI)) * this.factor;
-    console.log('margin: ' + cos);
+    //console.log('margin: ' + cos);
     return cos;
   }
 
@@ -88,7 +100,7 @@ export class DigitalMeterComponent implements OnInit {
       this.time[0] = format(new Date(), 'HH');
       this.time[1] = format(new Date(), 'mm');
       this.time[2] = format(new Date(), 'ss');
-    }, 1000)
+    }, 1000);
   }
 
 
