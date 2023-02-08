@@ -14,6 +14,7 @@ export class AnalogMeterComponent implements OnInit {
    *
    */
 
+  private static START_POSITION = -135;
   /** tamaño del componente */
   @Input()
   WIDTH!: number;
@@ -30,22 +31,22 @@ export class AnalogMeterComponent implements OnInit {
   @Input()
   public HEIGHT!: number;
   public deg!: number;
-
   constructor() {
-  }
-
-  async ngOnInit() {
-    this.deg = -135;
   }
 
   @Input()
   set dataIn(value: any) {
     try {
-      this.deg = value;
+      this.deg = AnalogMeterComponent.START_POSITION + (value * 1.35); //TODO mover a analog-meter.component
     } catch (err) {
       console.log(err);
     }
   }
+  async ngOnInit() {
+    this.deg = -135;
+  }
+
+
 
 
 

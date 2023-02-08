@@ -7,6 +7,10 @@ import { Subject, Subscription } from 'rxjs';
 @Injectable()
 export class LocationMngr {
 
+
+    static radarFJson = require('../../assets/radars/fijosGal.json');
+    static radarTJson = require('../../assets/radars/todosGal.json');
+
     public lastLocation: any;
     private locationObservable = new Subject<any>();
     private locationSubscription!: Subscription;
@@ -98,4 +102,7 @@ export class LocationMngr {
         }
     }
 
+
 }
+
+

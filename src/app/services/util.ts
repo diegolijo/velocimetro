@@ -41,6 +41,8 @@ export interface ITest {
 @Injectable()
 export class Util {
 
+    private static RADIO_TIERRA_EN_KILOMETROS = 6371;
+
     private toastMgs: HTMLIonToastElement | undefined;
     public confirmationAlert: HTMLIonAlertElement | undefined;
     private subscribeAlertBackButton: any;
@@ -252,7 +254,7 @@ export class Util {
             msg = this.getErrorMsg(error, msg);
         }
         msg = tag ? tag + ': <br> ' + msg : msg;
-        const butons = [];
+        const butons: any = [];
         /*         butons.push({
                     cssClass: 'primary-fonts',
                     text: 'enviar',
@@ -713,6 +715,26 @@ export class Util {
             console.log('callToNumber: ' + err);
         }
     }
+
+    //************************************** DISTANCIAS *************************************/
+    public calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+        // Convertir todas las coordenadas a radianes
+        lat1 = this.degToRad(lat1);
+        lon1 = this.degToRad(lon1);
+        lat2 = this.degToRad(lat2);
+        lon2 = this.degToRad(lon2);
+        // Aplicar fórmula
+        const longsDiff = lon2 - lon1;
+        const latsDiff = lat2 - lat1;
+        const a = Math.pow(Math.sin(latsDiff / 2.0), 2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(longsDiff / 2.0), 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * Util.RADIO_TIERRA_EN_KILOMETROS;
+        return c;
+    };
+
+
+    private degToRad(grados: number) {
+        return grados * Math.PI / 180;
+    };
 
 }
 

@@ -4,6 +4,32 @@ import { HttpManager } from './http-provider';
 
 export interface IResponse { arr: string[]; todas: string }
 
+export interface IDayPeriod {
+    properties: {
+        days: [{
+            timePeriod: {
+                begin: {
+                    timeInstant: Date;
+                };
+                end: {
+                    timeInstant: Date;
+                };
+            };
+            variables: [
+                {
+                    name: string;
+                    sunrise: Date;
+                    midday: Date;
+                    sunset: Date;
+                    duration: string;
+                }
+            ];
+        }
+        ];
+    };
+}
+
+
 @Injectable()
 export class MongerIA {
 
@@ -29,33 +55,52 @@ export class MongerIA {
         return wreference;
     }
 
-    /*********************************  METEO  ************************************/
-    public async getMeteo(method: string, lat: number, long: number): Promise<IResponse> {
+    /*********************************  METEO  ***********************************
+     * Las variables de predicción numérica que se pueden consultar a través de la API son las siguientes:
+        - Estado del cielo
+        - Temperatura
+        - Vento
+        - Precipitaciones
+        - Cota de nieve
+        - Humedad relativa
+        - Cobertura nubosa
+        - Presión al nivel del mar
+        - Período de ola*
+        - Dirección de ola*
+        - Temperatura del agua*
+        - Salinidad*
+        - Altura de ola*
+    */
+    public async getMeteo(method: string, lat: number, long: number, place: string, modelo: string): Promise<IResponse> {
         return new Promise(async (resolve: any, reject: any) => {
             try {
-                const metod = 'getSolarInfo';
-                const value = `${metod}?coords=${lat},${long}`;
-                const res = await this.http.get(MongerIA.METEOSIX_URL + value + '&API_KEY=' + MongerIA.METEOSIX_KEY);
-                resolve(res);
+                const places = 'findPlaces?location=' + place;
+                const solar = `getSolarInfo?coords=${lat},${long}`;
+                const tiles = `getTidesInfo?coords=${lat},${long}`;
+                const numeric = `getNumericForecastInfo?coords=${lat},${long}&variables=${modelo}`;
+                const res = await this.http.get(
+                    MongerIA.METEOSIX_URL + tiles + '&API_KEY=' + MongerIA.METEOSIX_KEY);
+                resolve(res.features[0].properties);
             } catch (err) {
                 reject(err);
             }
         });
     }
+    /*************************************************************************/
 
-    // TODO
+    /* TODO ****************************** WIKI ************************************/
     public async getWiki(value: string): Promise<IResponse> {
         return new Promise(async (resolve: any, reject: any) => {
             try {
                 const res = await this.http.getAsText(MongerIA.URL_WIKI + value);
                 const contentText: any = res.getElementById('mw-content-text');
-                let elements = [];
+                let elements: any = [];
                 if (contentText.children[1].length) {
                     elements = contentText.children.contentText.div[1];
                 }
                 const deffs: IResponse = { arr: [], todas: value + ', ' };
                 for (const iterator of elements) {
-                    const pocessed = this.processText(iterator.innerText);
+                    const pocessed = this.processWordRefText(iterator.innerText);
                     deffs.arr.push(pocessed);
                     deffs.todas += pocessed;
                 }
@@ -72,13 +117,13 @@ export class MongerIA {
             try {
                 const res = await this.http.getAsText(MongerIA.URL_W_REFERENCE + value);
                 const otherDicts: any = res.getElementById('otherDicts');
-                let elements = [];
+                let elements: any = [];
                 if (otherDicts.children.length > 2 && otherDicts.children[2].children.length > 1) {
                     elements = otherDicts.children[2].children[1].children;
                 }
                 const deffs: IResponse = { arr: [], todas: value + ', ' };
                 for (const iterator of elements) {
-                    const pocessed = this.processText(iterator.innerText);
+                    const pocessed = this.processWordRefText(iterator.innerText);
                     deffs.arr.push(pocessed);
                     deffs.todas += pocessed;
                 }
@@ -91,7 +136,7 @@ export class MongerIA {
     }
 
 
-    private processText(innerText: string): string {
+    private processWordRefText(innerText: string): string {
         // TODO separar simbolos, definiciones y ejemplos
         /*        let result: any = {};
                const arr = innerText.split(':');
