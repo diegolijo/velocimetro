@@ -11,9 +11,7 @@ import { IResponse, MongerIA } from '../../services/monger-ia';
 import { UserData } from '../../services/UserData';
 import { Util } from '../../services/util';
 
-
 export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number }
-
 
 @Component({
   selector: 'app-home',
@@ -158,8 +156,8 @@ export class HomePage implements OnInit {
     this.location.initWatchPosition();
     this.distanceTraveled = await this.userData.getDistanceTraveled() || 0;
     this.location.getPositionObservable().subscribe(async (value: any) => {
-      this.onUpdatePosition(value);
       this.updateDistance(value);
+      this.onUpdatePosition(value);
       this.CheckRadars(value);
     });
   }
@@ -183,7 +181,6 @@ export class HomePage implements OnInit {
         await this.userData.setDistanceTraveled(this.distanceTraveled);
       }
     }
-    this.arrPositions.push(value);
   }
 
   private async CheckRadars(value: any) {
@@ -196,19 +193,17 @@ export class HomePage implements OnInit {
   }
 
 
-  isClosed(coords: any, el) {
+  private isClosed(coords: any, el) {
+    let value = false;
     const dist = this.util.calculateDistance(
       coords.coords.latitude, coords.coords.longitude, this.puntoMedio(el.coords).lat, this.puntoMedio(el.coords).long);
-    /*     if (dist < 20 && 'Radar Móvil' !== el.tipo) {
-          console.log('distancia al radar: ' + dist.toFixed(1) + ' km - ' + el.carretera + ' km: ' + el.pk[0].toFixed(1) + ' tipo: ' + el.tipo + ' - ' + this.puntoMedio(el.coords).lat + ',' + this.puntoMedio(el.coords).long);
-        }
-            const diflat = coords.coords[0].latitude - this.puntoMedio(el.coords).lat;
-            const diflong = coords.coords[0].longitude - this.puntoMedio(el.coords).long; */
     if (dist < HomePage.DISTANCE_TO_RADAR && 'Radar Móvil' !== el.tipo) {
-      return true;
-    } else {
-      return false;
+      value = true;
     }
+    /*     if (dist < 20 && 'Radar Móvil' !== el.tipo) {
+      console.log('distancia al radar: ' + dist.toFixed(1) + ' km - ' + el.carretera + ' km: ' + el.pk[0].toFixed(1) + ' tipo: ' + el.tipo + ' - ' + this.puntoMedio(el.coords).lat + ',' + this.puntoMedio(el.coords).long);
+    } */
+    return value;
   }
 
   private puntoMedio(arg0: any) {
