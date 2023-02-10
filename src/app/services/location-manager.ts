@@ -8,8 +8,8 @@ import { Subject, Subscription } from 'rxjs';
 export class LocationMngr {
 
 
-    static radarFJson = require('../../assets/radars/fijosGal.json');
-    static radarTJson = require('../../assets/radars/todosGal.json');
+    static radarFJson = require('../../assets/radars/fijosEsp.json');
+    static radarTJson = require('../../assets/radars/noMovilEsp.json');
 
     public lastLocation: any;
     private locationObservable = new Subject<any>();

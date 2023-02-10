@@ -125,17 +125,8 @@ export class HomePage implements OnInit {
   }
 
   public async onClickSpeechDireccion() {
-    /*  const radares = LocationMngr.radarJson;
-     const latLangs = [];
-     for await (const radar of radares) {
-       const latlang = await this.location.forwardGeocode(`${radar.provincia}, ${radar.carretera}, km ${radar.pk[0].toFixed()}`);
-       radar.latlang = latlang;
-       latLangs.push(radar);
-     }
-     console.log(latLangs); */
     this.adress = await this.location.reverseGeocode(this.lat, this.long);
-    console.log(this.adress[0].addressLines[0]);
-    this.speechToText.speechText('estamos en ' + this.adress[0].addressLines[0]);
+    this.speechToText.speechText('estamos en ' + this.adress[0].thoroughfare + ' ' + this.adress[0].subThoroughfare + ', ' + this.adress[0].locality);
   }
 
   public async onClickClearDistance() {
@@ -183,13 +174,16 @@ export class HomePage implements OnInit {
 
   private async updateDistance(value: any) {
     if (this.lat && this.long && this.arrPositions.length >= 5) {
+      const last = this.arrPositions.shift();
       const distanceMedia = this.util.calculateDistance(
-        this.arrPositions[4].coords.latitude, this.arrPositions[4].coords.longitude, value.coords.latitude, value.coords.longitude);
+        last.coords.latitude, last.coords.longitude, value.coords.latitude, value.coords.longitude);
+      console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg.');
       if (distanceMedia > HomePage.DISTANCIA_MINIMA_RECORRIDA) {
         this.distanceTraveled += this.util.calculateDistance(this.lat, this.long, value.coords.latitude, value.coords.longitude);
         await this.userData.setDistanceTraveled(this.distanceTraveled);
       }
     }
+    this.arrPositions.push(value);
   }
 
   private async CheckRadars(value: any) {
