@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
 
   @ViewChild('selectRef', { static: true }) selectRef!: IonSelect;
 
-  private static DISTANCIA_MINIMA_RECORRIDA = 0.02;
+  private static DISTANCIA_MINIMA_RECORRIDA = 20 / 1000;
   private static DISTANCE_TO_RADAR = 2;
 
   private arrPositions: any = [];
@@ -156,10 +156,25 @@ export class HomePage implements OnInit {
     this.location.initWatchPosition();
     this.distanceTraveled = await this.userData.getDistanceTraveled() || 0;
     this.location.getPositionObservable().subscribe(async (value: any) => {
-      this.updateDistance(value);
+      await this.updateDistance(value);
       this.onUpdatePosition(value);
       this.CheckRadars(value);
     });
+  }
+
+  private async updateDistance(value: any) {
+    if (this.lat && this.long && this.arrPositions.length >= 5) {
+      const last = this.arrPositions.shift();
+      const distanceMedia = this.util.calculateDistance(
+        last.coords.latitude, last.coords.longitude, value.coords.latitude, value.coords.longitude);
+      const distanceInstant = this.util.calculateDistance(this.lat, this.long, value.coords.latitude, value.coords.longitude);
+      console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg. distance inst:' + distanceInstant + ' distance media: ' + distanceMedia);
+      if (distanceMedia > HomePage.DISTANCIA_MINIMA_RECORRIDA) {  // 20 metros en 5 seg. + -
+        this.distanceTraveled += distanceInstant;
+        await this.userData.setDistanceTraveled(this.distanceTraveled);
+      }
+    }
+    this.arrPositions.push(value);
   }
 
   private async onUpdatePosition(value: any) {
@@ -167,20 +182,6 @@ export class HomePage implements OnInit {
     this.long = value.coords.longitude;
     this.alt = value.coords.altitude;
     this.kmH = parseInt((value.coords.speed * 3.6).toFixed(), 10);
-  }
-
-
-  private async updateDistance(value: any) {
-    if (this.lat && this.long && this.arrPositions.length >= 5) {
-      const last = this.arrPositions.shift();
-      const distanceMedia = this.util.calculateDistance(
-        last.coords.latitude, last.coords.longitude, value.coords.latitude, value.coords.longitude);
-      console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg.');
-      if (distanceMedia > HomePage.DISTANCIA_MINIMA_RECORRIDA) {
-        this.distanceTraveled += this.util.calculateDistance(this.lat, this.long, value.coords.latitude, value.coords.longitude);
-        await this.userData.setDistanceTraveled(this.distanceTraveled);
-      }
-    }
   }
 
   private async CheckRadars(value: any) {
