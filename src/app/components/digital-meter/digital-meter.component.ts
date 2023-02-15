@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { format } from 'date-fns';
 
 @Component({
@@ -8,7 +8,11 @@ import { format } from 'date-fns';
   styleUrls: ['./digital-meter.component.scss'],
 })
 export class DigitalMeterComponent implements OnInit {
-  kmH: any = 0;
+
+  @Output() clockEvent = new EventEmitter<string>();
+
+  public kmH: any = 0;
+
   arrLeds = [
     { value: 1, margin: 0, deg: 0 },
     { value: 2, margin: 0, deg: 0 },
@@ -79,12 +83,17 @@ export class DigitalMeterComponent implements OnInit {
     }
   }
 
-  public getDegValue(deg: number) {
+
+  public onClickClearClock() {
+    this.clockEvent.emit('clear');
+  }
+
+  private getDegValue(deg: number) {
     //console.log('deg: ' + deg * 2);
     return deg * 2;
   }
 
-  public getPxToTop(deg: number) {
+  private getPxToTop(deg: number) {
     const cos = this.factor - Math.cos(deg / (180 / Math.PI)) * this.factor;
     //console.log('margin: ' + cos);
     return cos;

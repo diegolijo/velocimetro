@@ -1,7 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { IonSelect, Platform } from '@ionic/angular';
@@ -12,7 +13,6 @@ import { UserData } from '../../services/UserData';
 import { Util } from '../../services/util';
 
 export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number }
-
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -46,9 +46,6 @@ export class HomePage implements OnInit {
   public long = 0;
   public alt = 0;
 
-
-
-
   constructor(
     private platform: Platform,
     private location: LocationMngr,
@@ -57,7 +54,8 @@ export class HomePage implements OnInit {
     private androidPermissions: AndroidPermissions,
     private mongerIa: MongerIA,
     private util: Util,
-    private userData: UserData
+    private userData: UserData,
+    private router: Router
   ) { }
 
 
@@ -92,7 +90,6 @@ export class HomePage implements OnInit {
     }
   }
 
-
   public onClickBtn(event: any) {
     /*     if (this.btnSelected === event.currentTarget.textContent) { return; } */
     this.btnSelected = event.currentTarget.textContent;
@@ -116,6 +113,10 @@ export class HomePage implements OnInit {
     this.selectRef.open();
   }
 
+  public onClickMap() {
+    this.router.navigate(['map']);
+  }
+
   async onChangeVoice(event: any) {
     this.selectedVoice = event.detail.value;
     // await this.translate.reloadLang(lang);
@@ -127,7 +128,7 @@ export class HomePage implements OnInit {
     this.speechToText.speechText('estamos en ' + this.adress[0].thoroughfare + ' ' + this.adress[0].subThoroughfare + ', ' + this.adress[0].locality);
   }
 
-  public async onClickClearDistance() {
+  public async onClickClearDistance(event: any) {
     this.util.showConfirmationAlert(
       'Atencion!',
       '¿Quieres resetear la distancia recorrida?',

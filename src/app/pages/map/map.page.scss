@@ -1,0 +1,74 @@
+ion-header {
+    position: absolute; // TODO inyectar desde solicitud
+    top: 0em;
+    z-index: 100;
+
+    ion-buttons {
+        position: absolute;
+    }
+    ion-back-button::part(icon) {
+        position: absolute;
+        height: 2em;
+        width: 2em;
+        color: var(--ion-color-warning);
+    }
+    div {
+        height: 3.5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    img {
+        width: 50%;
+        opacity: 1;
+        margin-left: 1em;
+        filter:blur(3px);
+    }
+}
+
+.map {
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+/*  TODO    div > div > div:nth-child(2) { 
+        background: black !important;
+    } */
+}
+
+.footer {
+    width: 100%;
+    z-index: 100;
+    height: 2em;
+    background: black;
+    position: absolute; // TODO inyectar desde solicitud
+    bottom: 0em;
+}
+
+.gm-svpc {
+    margin-bottom: 15px !important;
+}
+
+.fade-in {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 0;
+    animation: fadeOut 1.5s;
+    opacity: 0;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        z-index: 10000000000;
+    }
+    70% {
+        opacity: 1;
+        z-index: 10000000000;
+    }
+    100% {
+        opacity: 0;
+        z-index: 0;
+    }
+}

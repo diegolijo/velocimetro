@@ -21,7 +21,7 @@
   <div class="minutos">{{time[1]}}</div>
 </div>
 
-<div class="contador-distancia">
+<div class="contador-distancia" (click)="onClickClearClock()">
   <div>
     {{(meters).toFixed(2)}} km
   </div>

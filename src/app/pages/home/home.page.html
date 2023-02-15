@@ -1,8 +1,7 @@
-<!-- <img src=".\assets\img\KITT.png" style="position: absolute; bottom: 2em;"> -->
 <app-analog-meter [WIDTH]="500" [dataIn]="kmH" [top]="0" [right]="0" *ngIf="false">
 </app-analog-meter>
 
-<app-digital-meter [dataIn]="kmH" [distanceTraveled]="distanceTraveled">
+<app-digital-meter [dataIn]="kmH" [distanceTraveled]="distanceTraveled" (clockEvent)="onClickClearDistance($event)">
 </app-digital-meter>
 
 
@@ -16,9 +15,10 @@
   <ion-icon name="settings-sharp"></ion-icon>
 </ion-button>
 
+
 <div class="kitt-container">
   <div id="side-btns">
-    <ion-button color="warning" (click)="onClickClearDistance()">AIR</ion-button>
+    <ion-button color="warning">AIR</ion-button>
     <ion-button color="warning" (click)="onClickSpeechDireccion()">OIL</ion-button>
     <ion-button [ngStyle]="{'opacity': kmH > 30 && kmH <50?  '100%': '40%'}" color="danger">
       P1
@@ -56,8 +56,8 @@
       (click)="onClickBtn($event)">PURSUIT</ion-button>
   </div>
   <div id="side-btns">
-    <ion-button color="warning">
-      S1
+    <ion-button color="warning" (click)="onClickMap()">
+      MAP
     </ion-button>
     <ion-button color="danger">
       S2
