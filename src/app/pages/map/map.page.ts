@@ -189,9 +189,9 @@ export class MapPage implements OnInit {
       this.deviceMarkerOptions.position = { lat: lat, lng: lng };
       this.deviceMarker = new google.maps.Marker(this.deviceMarkerOptions);
     }
-    this.map.setCenter(new google.maps.LatLng(lat, lng));
+    this.deviceMarker.setPosition({ lat: lat, lng: lng });
     if (this.forceCenter) {
-      this.deviceMarker.setPosition({ lat: lat, lng: lng });
+      this.map.setCenter(new google.maps.LatLng(lat, lng));
     }
   }
 

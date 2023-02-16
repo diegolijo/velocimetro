@@ -4,11 +4,13 @@ import { Injectable } from '@angular/core';
 import { NativeStorage } from '@awesome-cordova-plugins/native-storage/ngx';
 import { Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { Subject } from 'rxjs';
 
 
 @Injectable()
 export class UserData {
     private readonly APP_PREFIX = 'KITT';
+    private storageObservable = new Subject<any>();
 
     constructor(
         public platform: Platform,
@@ -24,23 +26,39 @@ export class UserData {
         return this.getItem(this.APP_PREFIX + 'traveled');
     }
 
+
+    public async init() {
+        return new Promise((resolve, reject) => {
+            this.storageBrowser.create().then(() => {
+                resolve(true);
+            }, (err) => {
+                reject(err);
+            });
+        });
+    }
+
     private setItem(key: string, value: any): Promise<void> {
-        if (this.platform.is('cordova')) {
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            if (this.platform.is('cordova')) {
                 this.storageNative.setItem(key, value).then(() => {
                     resolve();
                 }, (err: any) => {
                     reject(err);
                 });
-            });
-        } else {
-            return this.storageBrowser.set(key, value);
-        }
+            } else {
+                this.storageBrowser.set(key, value).then(() => {
+                    this.storageObservable.next({ key, value });
+                    resolve();
+                }, (err: any) => {
+                    reject(err);
+                });
+            }
+        });
     }
 
     private getItem(key: string): Promise<any> {
-        if (this.platform.is('cordova')) {
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            if (this.platform.is('cordova')) {
                 this.storageNative.getItem(key).then((value: any) => {
                     resolve(value);
                 }, (err: any) => {
@@ -50,37 +68,53 @@ export class UserData {
                         reject(err);
                     }
                 });
-            });
-        } else {
-            return this.storageBrowser.get(key);
-        }
+            } else {
+                this.storageBrowser.get(key).then((value: any) => {
+                    resolve(value);
+                }, (err: any) => {
+                    if (err.code === 2) {
+                        resolve(null);
+                    } else {
+                        reject(err);
+                    }
+                });
+            }
+        });
     }
 
     private removeItem(key: string) {
-        if (this.platform.is('cordova')) {
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            if (this.platform.is('cordova')) {
                 this.storageNative.remove(key).then(() => {
                     resolve(null);
                 }).catch((err: any) => {
                     reject(err);
                 });
-            });
-        } else {
-            return this.storageBrowser.remove(key);
-        }
+            } else {
+                this.storageBrowser.remove(key).then(() => {
+                    resolve(null);
+                }).catch((err: any) => {
+                    reject(err);
+                });
+            }
+        });
     }
 
     private clear() {
-        if (this.platform.is('cordova')) {
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            if (this.platform.is('cordova')) {
                 this.storageNative.clear().then(() => {
                     resolve(null);
                 }, (err: any) => {
                     reject(err);
                 });
-            });
-        } else {
-            return this.storageBrowser.clear();
-        }
+            } else {
+                this.storageBrowser.clear().then(() => {
+                    resolve(null);
+                }, (err: any) => {
+                    reject(err);
+                });
+            }
+        });
     }
 }
