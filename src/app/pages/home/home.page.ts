@@ -169,7 +169,7 @@ export class HomePage implements OnInit {
       const distanceMedia = this.util.calculateDistance(
         last.coords.latitude, last.coords.longitude, value.coords.latitude, value.coords.longitude);
       const distanceInstant = this.util.calculateDistance(this.lat, this.long, value.coords.latitude, value.coords.longitude);
-      console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg. distance inst:' + distanceInstant + ' distance media: ' + distanceMedia);
+      console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg. distance inst (metros):' + distanceInstant * 1000 + ' distance media (metros): ' + distanceMedia * 1000);
       if (distanceMedia > HomePage.DISTANCIA_MINIMA_RECORRIDA) {  // 20 metros en 5 seg. + -
         this.distanceTraveled += distanceInstant;
         await this.userData.setDistanceTraveled(this.distanceTraveled);

@@ -107,11 +107,11 @@
       "cordova-plugin-device-motion": {},
       "cordova-plugin-nativeaudio": {},
       "cordova-plugin-android-permissions": {},
-      "vosk-speech-to-text": {},
       "cordova-plugin-advanced-http": {
         "ANDROIDBLACKLISTSECURESOCKETPROTOCOLS": "SSLv3,TLSv1"
       },
-      "cordova-plugin-nativestorage": {}
+      "cordova-plugin-nativestorage": {},
+      "vosk-speech-to-text": {}
     },
     "platforms": [
       "android"
