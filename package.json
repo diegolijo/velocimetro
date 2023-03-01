@@ -24,6 +24,7 @@
     "@angular/router": "^15.0.0",
     "@awesome-cordova-plugins/android-full-screen": "^6.3.0",
     "@awesome-cordova-plugins/android-permissions": "^6.3.0",
+    "@awesome-cordova-plugins/camera": "^6.3.0",
     "@awesome-cordova-plugins/core": "^6.3.0",
     "@awesome-cordova-plugins/geolocation": "^6.3.0",
     "@awesome-cordova-plugins/http": "^6.3.0",
@@ -38,6 +39,7 @@
     "date-fns": "^2.29.3",
     "ionicons": "^6.0.3",
     "rxjs": "~7.5.0",
+    "tesseract.js": "^4.0.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
@@ -59,6 +61,7 @@
     "cordova-android": "^10.1.1",
     "cordova-plugin-advanced-http": "^3.3.1",
     "cordova-plugin-android-permissions": "^1.1.5",
+    "cordova-plugin-camera": "^6.0.0",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-device-motion": "^2.0.1",
     "cordova-plugin-file": "^7.0.0",
@@ -111,7 +114,10 @@
         "ANDROIDBLACKLISTSECURESOCKETPROTOCOLS": "SSLv3,TLSv1"
       },
       "cordova-plugin-nativestorage": {},
-      "vosk-speech-to-text": {}
+      "vosk-speech-to-text": {},
+      "cordova-plugin-camera": {
+        "ANDROIDX_CORE_VERSION": "1.6.+"
+      }
     },
     "platforms": [
       "android"

@@ -7,10 +7,12 @@ import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import { IonSelect, Platform } from '@ionic/angular';
 import { SpeechToText } from 'angular-speech-to-text';
+import { OcrService } from '../../services/ocr-service';
 import { LocationMngr } from '../../services/location-manager';
 import { IResponse, MongerIA } from '../../services/monger-ia';
 import { UserData } from '../../services/UserData';
 import { Util } from '../../services/util';
+import { ProPhoto } from 'src/app/services/photo-provider';
 
 export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number }
 @Component({
@@ -45,6 +47,7 @@ export class HomePage implements OnInit {
   public lat = 0;
   public long = 0;
   public alt = 0;
+  public textOCR = '';
 
   constructor(
     private platform: Platform,
@@ -55,7 +58,10 @@ export class HomePage implements OnInit {
     private mongerIa: MongerIA,
     private util: Util,
     private userData: UserData,
-    private router: Router
+    private router: Router,
+    private ocr: OcrService,
+    private proPhoto: ProPhoto
+
   ) { }
 
 
@@ -138,6 +144,10 @@ export class HomePage implements OnInit {
       },
       () => { }
     );
+  }
+  public async onOCR() {
+    const b64Image = await this.proPhoto.takePhotoB64();
+    this.textOCR = await this.ocr.recognize(b64Image);
   }
 
   /************************************************************/

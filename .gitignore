@@ -55,6 +55,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular
+/speech-to-text
 /.angular/cache
 .sass-cache/
 /connect.lock

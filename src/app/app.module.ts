@@ -18,8 +18,11 @@ import { AppComponent } from './app.component';
 import { HttpManager } from './services/http-provider';
 import { LocationMngr } from './services/location-manager';
 import { MongerIA } from './services/monger-ia';
+import { OcrService } from './services/ocr-service';
 import { UserData } from './services/UserData';
 import { Util } from './services/util';
+import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { ProPhoto } from './services/photo-provider';
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,6 +48,9 @@ import { Util } from './services/util';
     Util,
     NativeStorage,
     UserData,
+    OcrService,
+    Camera,
+    ProPhoto,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
