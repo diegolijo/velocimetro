@@ -12,7 +12,8 @@ import { LocationMngr } from '../../services/location-manager';
 import { IResponse, MongerIA } from '../../services/monger-ia';
 import { UserData } from '../../services/UserData';
 import { Util } from '../../services/util';
-import { ProPhoto } from 'src/app/services/photo-provider';
+import { ProPhoto } from '../../services/photo-provider';
+import { NotificationListener } from '../../services/notification-listener';
 
 export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number }
 @Component({
@@ -60,7 +61,8 @@ export class HomePage implements OnInit {
     private userData: UserData,
     private router: Router,
     private ocr: OcrService,
-    private proPhoto: ProPhoto
+    private proPhoto: ProPhoto,
+    private notificationListener: NotificationListener
 
   ) { }
 
@@ -76,12 +78,15 @@ export class HomePage implements OnInit {
       //  this.util.showMessage('chanfon es guay');
       if (this.platform.is('cordova')) {
         await this.platform.ready();
-        this.requestPermissions();
+        this.requestAudioPermissions();
         this.initSubscribePosition();
         this.initSubscribeAcelerometer();
         this.initSubscribeSpeechToText();
         await this.loadAudioSamples();
         this.voices = await this.speechToText.getSpeechVoices();
+        this.checkNotificationPermission();
+        this.initSubscribeNotification();
+        this.notificationListener.listen();
         return;
       }
       setInterval(() => {
@@ -146,19 +151,23 @@ export class HomePage implements OnInit {
     );
   }
   public async onOCR() {
-    const b64Image = await this.proPhoto.takePhotoB64();
-    this.textOCR = await this.ocr.recognize(b64Image);
+    let b64Image;
+    if (this.platform.is('cordova')) {
+      b64Image = await this.proPhoto.takePhotoB64();
+    }
+    this.textOCR = await this.ocr.recognize(b64Image || 'https://tesseract.projectnaptha.com/img/eng_bw.png');
+    this.util.showException(this.textOCR);
   }
 
   /************************************************************/
 
-  private async requestPermissions() {
+  private async requestAudioPermissions() {
     const result = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO);
     const result2 = await this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAPTURE_AUDIO_OUTPUT);
     if (result.hasPermission === false) {
       // grabar micro para pedir permisos;
     } else {
-      console.log('permissions ok');
+      console.log('audio permissions ok');
     }
   }
 
@@ -179,7 +188,7 @@ export class HomePage implements OnInit {
       const distanceMedia = this.util.calculateDistance(
         last.coords.latitude, last.coords.longitude, value.coords.latitude, value.coords.longitude);
       const distanceInstant = this.util.calculateDistance(this.lat, this.long, value.coords.latitude, value.coords.longitude);
-      console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg. distance inst (metros):' + distanceInstant * 1000 + ' distance media (metros): ' + distanceMedia * 1000);
+  //    console.log(((value.timestamp - last.timestamp) / 1000).toFixed(1) + ' seg. distance inst (metros):' + distanceInstant * 1000 + ' distance media (metros): ' + distanceMedia * 1000);
       if (distanceMedia > HomePage.DISTANCIA_MINIMA_RECORRIDA) {  // 20 metros en 5 seg. + -
         this.distanceTraveled += distanceInstant;
         await this.userData.setDistanceTraveled(this.distanceTraveled);
@@ -197,7 +206,7 @@ export class HomePage implements OnInit {
 
   private async CheckRadars(value: any) {
     const closeRadars = LocationMngr.radarTJson.filter(el => this.isClosed(value, el));
-    console.log(closeRadars);
+ //   console.log(closeRadars);
     if (closeRadars.length) {
       this.alertRadar();
     }
@@ -240,6 +249,7 @@ export class HomePage implements OnInit {
     }, true);
   }
 
+  /***************************************** SPEECH *******************************************/
   private async initSubscribeSpeechToText() {
     this.subscribeToSpeech();
     // **** STT ****
@@ -256,8 +266,7 @@ export class HomePage implements OnInit {
   }
 
   private async subscribeToSpeech() {
-    this.speechToText.subscrbeToSpeech(
-      'home',
+    this.speechToText.subscrbeToSpeech('home',
       async (value: any) => {
         console.log(JSON.stringify(value));
         //*****STT****
@@ -362,11 +371,37 @@ export class HomePage implements OnInit {
     }
   }
 
-
   private alertRadar() {
     this.play('alarm');
   }
 
+  /******************************** Notifications ****************************/
+
+  private initSubscribeNotification() {
+    this.notificationListener.getObservable().subscribe(value => {
+      this.notificationHandler(value);
+    });
+  }
+
+  private async checkNotificationPermission() {
+    const permission = await this.notificationListener.hasPermission();
+    // TODO SIMPRE devuelve undefined
+    if (!permission) {
+      this.launchSettings();
+    };
+  }
+
+  private launchSettings() {
+    this.notificationListener.launchSettings();
+  }
+
+  private notificationHandler(value: any) {
+    console.log('notification: ' + JSON.stringify(value));
+    // {"title":"jonii ava","package":"com.whatsapp","text":"Hola","textLines":""}
+    if (value.notification.package === 'com.whatsapp') {
+      this.speechToText.speechText('mensaje de ' + value.notification.title + '.: ' + value.notification.text);
+    }
+  }
 
 }
 

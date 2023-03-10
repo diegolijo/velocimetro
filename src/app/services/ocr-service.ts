@@ -1,29 +1,32 @@
 import { Injectable } from '@angular/core';
-import { createWorker } from 'tesseract.js';
-import { ProPhoto } from './photo-provider';
+import { createWorker, Worker } from 'tesseract.js';
+import { Util } from './util';
 
+const optns = { imageColor: true, imageGrey: true, imageBinary: true, rotateAuto: true };
 @Injectable()
 export class OcrService {
 
-  private tesseract: any;
+  private worker!: Worker;
 
-  constructor() {
+  constructor(
+    private util: Util
+  ) {
   }
   async initialize() {
     return new Promise(async (rs, rj) => {
       try {
         console.log('OCR init');
-        this.tesseract = await createWorker({
-          /*       workerPath: 'https://unpkg.com/tesseract.js@v4.0.1/dist/worker.min.js',
-                langPath: 'https://tessdata.projectnaptha.com/4.0.0_best/eng.traineddata.gz',
-                corePath: 'https://unpkg.com/tesseract.js-core@v4.0.1/tesseract-core.wasm.js', */
+        this.worker = await createWorker({
+          logger: m => console.log(m),
+          langPath: 'assets/lib',
+
         });
-        await this.tesseract.loadLanguage('spa');
-        await this.tesseract.initialize('spa');
+        await this.worker.loadLanguage('spa');
+        await this.worker.initialize('spa');
         rs(true);
       } catch (err) {
         console.log(err);
-        delete this.tesseract;
+        //   delete this.tesseract;
       }
     });
   }
@@ -31,22 +34,19 @@ export class OcrService {
   async recognize(b64Image: string): Promise<string> {
     return new Promise(async (rs, rj) => {
       try {
-        if (!this.tesseract) {
+        this.util.showLoader('leyendo imagen...');
+        if (!this.worker) {
           await this.initialize();
         }
-
-        const { data: { text } } = await this.tesseract.recognize(b64Image);
+        const { data: { text } } = await this.worker.recognize(b64Image, optns);
         console.log(text);
         rs(text);
       } catch (err) {
         console.log(err);
-        delete this.tesseract;
-      } finally {
-        this.tesseract.terminate();
+        this.util.closeLoader();
+        //   delete this.tesseract;
       }
     });
-
-
 
   }
 

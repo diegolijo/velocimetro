@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 
+const HEADER_B64 = 'data:image/png;base64, ';
 export interface IFileFotos {
   name: string;
   url: string;
@@ -44,7 +45,7 @@ export class ProPhoto {
                 targetHeight: ProPhoto.CAM_HEIGHT */
       };
       this.camera.getPicture(options).then(value => {
-        rs('data:image/png;base64, ' + value);
+        rs(HEADER_B64 + value);
       }).catch(err => {
         rj(err);
       });

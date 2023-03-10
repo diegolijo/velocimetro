@@ -37,7 +37,7 @@ export interface ITest {
     speed_Mbps: number;
 }
 
-
+declare const cordova: any;
 @Injectable()
 export class Util {
 
@@ -170,7 +170,7 @@ export class Util {
         this.timeOutLoader = setTimeout(async () => {
             this.showException(
                 await 'Tiempo de espera agotado');
-        }, 1 * 60);
+        }, 1 * 60 * 1000);
     }
 
 
@@ -284,6 +284,10 @@ export class Util {
             buttons: butons,
             cssClass: 'alert-exception'
         });
+        alert.onclick = () => {
+            console.log('fiestaaaaaa -> ' + alert.innerText);
+            cordova.plugins.clipboard.copy(alert.innerText);
+        };
         await alert.present();
         await alert.onDidDismiss();
         console.error(msg);

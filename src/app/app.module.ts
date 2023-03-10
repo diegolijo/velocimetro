@@ -23,7 +23,7 @@ import { UserData } from './services/UserData';
 import { Util } from './services/util';
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { ProPhoto } from './services/photo-provider';
-
+import { NotificationListener } from './services/notification-listener';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -51,6 +51,7 @@ import { ProPhoto } from './services/photo-provider';
     OcrService,
     Camera,
     ProPhoto,
+    NotificationListener,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
