@@ -206,9 +206,9 @@ export class Util {
         }
         const options: any = {
             message: mes,
-            cssClass: 'toastMarginTop',
-            position: 'top',
-            duration: 1000 * 6,
+            cssClass: 'toast-msg',
+            position: 'botton',
+            duration: 1000 * 60 *60,
             color: toastColor
         };
         this.toastMgs = await this.toastController.create(options);
@@ -349,23 +349,23 @@ export class Util {
                 const options = {
                     header: headerMsg,
                     message: msg,
-                    cssClass: 'confirmation-alert',
+                    cssClass: 'alert-msg', //TODO alert-msg
                     buttons: [{
-                        cssClass: 'primary-fonts',
+                        cssClass: 'alert-message',
                         text: 'aceptar',
                         role: 'accept'
                     }]
                 };
                 if (functionDiscard) {
                     options.buttons.unshift({
-                        cssClass: 'primary-fonts',
+                        cssClass: 'alert-message',
                         text: 'descartar',
                         role: 'discard'
                     });
                 }
                 if (functionCancel) {
                     options.buttons.unshift({
-                        cssClass: 'primary-fonts',
+                        cssClass: 'alert-message',
                         text: 'cancelar',
                         role: 'cancel'
                     });

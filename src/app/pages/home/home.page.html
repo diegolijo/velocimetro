@@ -18,7 +18,7 @@
 
 <div class="kitt-container">
   <div id="side-btns">
-    <ion-button color="warning">AIR</ion-button>
+    <ion-button color="warning" (click)="onClickClearSendAction()">AIR</ion-button>
     <ion-button color="warning" (click)="onClickSpeechDireccion()">OIL</ion-button>
     <ion-button [ngStyle]="{'opacity': kmH > 30 && kmH <50?  '100%': '40%'}" color="danger">
       P1

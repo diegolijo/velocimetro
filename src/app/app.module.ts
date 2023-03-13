@@ -24,6 +24,8 @@ import { Util } from './services/util';
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { ProPhoto } from './services/photo-provider';
 import { NotificationListener } from './services/notification-listener';
+import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
+import { SpeechManager } from './services/speech-manager';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -52,6 +54,8 @@ import { NotificationListener } from './services/notification-listener';
     Camera,
     ProPhoto,
     NotificationListener,
+    ScreenOrientation,
+    SpeechManager,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

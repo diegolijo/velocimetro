@@ -11,6 +11,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "update-vosk": "ionic cordova plugins rm vosk-speech-to-text && ionic cordova plugins add vosk-speech-to-text",
+    "update-notifications": "ionic cordova plugins rm cordova-notification-listener && ionic cordova plugins add cordova-notification-listener",
     "create_cordova_folder": "node -e \"require('fs').mkdirSync( './www', { recursive: true });\"",
     "build:platform": "npm run create_cordova_folder && cordova platform rm android && cordova platform add android@10.1.1 && ionic cordova run android"
   },
@@ -32,11 +33,13 @@
     "@awesome-cordova-plugins/native-audio": "^6.3.0",
     "@awesome-cordova-plugins/native-geocoder": "^6.3.0",
     "@awesome-cordova-plugins/native-storage": "^6.3.0",
+    "@awesome-cordova-plugins/screen-orientation": "^6.3.0",
     "@ionic/angular": "^6.1.9",
     "@ionic/cordova-builders": "^7.0.0",
     "@ionic/storage": "^3.0.6",
-    "angular-speech-to-text": "^1.0.17",
+    "angular-speech-to-text": "^1.0.20",
     "date-fns": "^2.29.3",
+    "import": "^0.0.6",
     "ionicons": "^6.0.3",
     "rxjs": "~7.5.0",
     "tesseract.js": "^4.0.2",
@@ -60,7 +63,7 @@
     "@typescript-eslint/parser": "5.3.0",
     "cordova-android": "^10.1.1",
     "cordova-clipboard": "^1.3.0",
-    "cordova-notification-listener": "^0.0.2",
+    "cordova-notification-listener": "^0.0.11",
     "cordova-plugin-advanced-http": "^3.3.1",
     "cordova-plugin-android-permissions": "^1.1.5",
     "cordova-plugin-camera": "^6.0.0",
@@ -75,8 +78,10 @@
     "cordova-plugin-nativegeocoder": "^3.5.0",
     "cordova-plugin-nativestorage": "^2.3.2",
     "cordova-plugin-request-location-accuracy": "^2.3.0",
+    "cordova-plugin-screen-orientation": "^3.0.3",
     "cordova-plugin-splashscreen": "5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
+    "es6-promise-plugin": "^4.2.2",
     "eslint": "^7.6.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jsdoc": "30.7.6",
@@ -91,7 +96,7 @@
     "karma-jasmine-html-reporter": "~2.0.0",
     "ts-node": "~8.3.0",
     "typescript": "~4.8.4",
-    "vosk-speech-to-text": "^1.1.11"
+    "vosk-speech-to-text": "^1.1.14"
   },
   "description": "An Ionic project",
   "cordova": {
@@ -116,12 +121,13 @@
         "ANDROIDBLACKLISTSECURESOCKETPROTOCOLS": "SSLv3,TLSv1"
       },
       "cordova-plugin-nativestorage": {},
-      "vosk-speech-to-text": {},
       "cordova-plugin-camera": {
         "ANDROIDX_CORE_VERSION": "1.6.+"
       },
       "cordova-clipboard": {},
-      "cordova-notification-listener": {}
+      "cordova-notification-listener": {},
+      "cordova-plugin-screen-orientation": {},
+      "vosk-speech-to-text": {}
     },
     "platforms": [
       "android"

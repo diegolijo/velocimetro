@@ -6,32 +6,56 @@ declare const cordova: any;
 @Injectable()
 export class NotificationListener {
 
+
     private notificationObservable = new Subject<any>();
 
     constructor() { }
 
     public listen() {
         cordova.plugins.NotificationListener.listen((n) => {
-            console.log('Received notification ' + JSON.stringify(n));
             this.notificationObservable.next({ notification: n });
         }, (e) => {
-            console.log('Notification Error ' + e);
             this.notificationObservable.next({ error: e });
         });
     }
 
     public async hasPermission(): Promise<any> {
-        const permission = await cordova.plugins.NotificationListener.hasPermission();
-        console.log('permission: ' + JSON.stringify(permission));
-        return permission;
+        return new Promise((rs, rj) => {
+            cordova.plugins.NotificationListener.hasPermission((permission) => {
+                rs(permission);
+            }, (e) => {
+                rj(e);
+            });
+        });
     }
 
     public launchSettings() {
-        cordova.plugins.NotificationListener.launchPermission();
+        return new Promise((rs, rj) => {
+            cordova.plugins.NotificationListener.launchSettings((launch) => {
+                rs(launch);
+            }, (e) => {
+                rj(e);
+            });
+        });
     }
 
     public getObservable() {
         return this.notificationObservable.asObservable();
+    }
+
+    public getNotifications() {
+        return new Promise((rs, rj) => {
+            cordova.plugins.NotificationListener.getNotifications((notifications) => {
+                console.log('Get Notifications: ' + JSON.stringify(notifications, null, 4));
+                rs(notifications);
+            }, (e) => {
+                rj(e);
+            });
+        });
+    }
+
+    public sendAction(values) {
+        cordova.plugins.NotificationListener.sendAction(values);
     }
 
 }
