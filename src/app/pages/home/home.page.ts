@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/member-ordering */
@@ -9,7 +10,7 @@ import { IonSelect, Platform } from '@ionic/angular';
 import { SpeechToText } from 'angular-speech-to-text';
 import { LocationMngr } from '../../services/location-manager';
 import { IResponse, MongerIA } from '../../services/monger-ia';
-import { NotificationListener } from '../../services/notification-listener';
+import { INotificacion, NotificationListener } from '../../services/notification-listener';
 import { OcrService } from '../../services/ocr-service';
 import { ProPhoto } from '../../services/photo-provider';
 import { UserData } from '../../services/UserData';
@@ -20,7 +21,7 @@ import { Subject } from 'rxjs';
 //iKnightRider
 //imichaelKnight
 
-declare const screen: any;
+declare const nots_queue: INotificacion[];
 
 const DEFAULT_LANG = 'es';
 
@@ -101,13 +102,13 @@ export class HomePage implements OnInit {
       }
       setInterval(() => {
         this.ledIndex = Math.round(Math.random() * 8);
+        this.CheckRadars({ coords: { latitude: 42.86434551941315, longitude: -8.554476508704525, alt: 0.000014999999621 } });
         // this.kmH += 1;
       }, 200);
       /*
       await this.mongerIa.getMeteo('sol', -8.97105767826291, 42.63869055614203, 'pobra', 'wind');
       await this.mongerIa.getWiki('perro');
       */
-      this.CheckRadars({ coords: { latitude: 42.86434551941315, longitude: -8.554476508704525, alt: 0.000014999999621 } });
     } catch (err) {
       console.log(err);
     }
@@ -385,187 +386,148 @@ export class HomePage implements OnInit {
     this.notificationListener.launchSettings();
   }
 
-  // TODO hacerlo sincrono: cola de procesamiento ||  flush -> farzar return por defecto del proceso e ejecución
-  private notificationHandler(value: any) {
-    console.log('notification: ' + JSON.stringify(value, null, 4));
-    if (this.btnSelected !== 'AUTOCRUISE') {
-      return;
-    }
-    if (!value.notification.group) {
-      switch (value.notification.package) {
-        case 'com.whatsapp':
-          this.processWhatsapp(value);
-          break;
-        case 'com.google.android.gm':
-          this.processGMail(value);
-          break;
-        case 'com.android.systemui':
-          this.processSystemui(value);
-          break;
-        case 'com.google.android.apps.dynamite':
-          this.processChatGm(value);
-          break;
-        default:
-          break;
+
+  private async notificationHandler(value: INotificacion, force?: boolean) {
+    try {
+      if (this.bussyNots && !force) {
+        this.queuePush(value);
+        return;
       }
-    }
-
-
-  }
-  async processChatGm(value: any) {
-
-    if (!value.notification.group && !this.bussyNots) { //TODO meter en una cola las notificaciones y procesarlas en lote
       this.bussyNots = true;
-      await this.speechManager.synthText(`Nuevo Gchat de ${value.notification.title} con asunto ${value.notification.text}`);
-      const response = await this.speechManager.checkQuestion('processGMail', '¿quieres volver a escuchar el mensaje?');
-      console.log('response: ' + response);
-      if (response) {
-        await this.processChatGm(value);
+      console.log('+*+*+notification: ' + JSON.stringify(value, null, 4));
+      if (this.btnSelected !== 'AUTOCRUISE') {    // ON/OFF
+        return;
       }
+      await this.processNotification(value);
       this.bussyNots = false;
-      /*  notification: {
-          "notification": {
-              "id": "0|com.google.android.gm|0|377044571::SUMMARY::Chat|10145",
-              "title": "",
-              "package": "com.google.android.gm",
-              "text": "",
-              "textLines": "",
-              "group": true, // TODO
-              "onGoing": false
-          }
-      }
-    notification: {
-          "notification": {
-              "id": "0|com.google.android.gm|0|377044571::a:AT_MENTION_STUBBY_HUB_DYNAMITE:/chime/space/vkmqZ4AAAAE|10145",
-              "title": "diego Santiago",
-              "package": "com.google.android.gm",
-              "text": "prueba", //TODO texto
-              "textLines": "",
-              "group": false, // TODO
-              "onGoing": false,
-              "actions": [
-                  {
-                      "title": "Leído"
-                  },
-                  {
-                      "title": "Responder"
-                  }
-              ]
-          }
-      }
-  //     main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech start
-    notification: {
-          "notification": {
-              "id": "0|com.google.android.apps.dynamite|0|377044571::SUMMARY::206ffa5b1e18220e2ec446a734206ed7|10249",
-              "title": "",
-              "package": "com.google.android.apps.dynamite",
-              "text": "",
-              "textLines": "",
-              "group": true, // TODO
-              "onGoing": false
-          }
-      }
-    notification: {
-          "notification": {
-              "id": "0|com.google.android.apps.dynamite|0|377044571::a:AT_MENTION_STUBBY_HUB_DYNAMITE:/chime/space/vkmqZ4AAAAE|10249",
-              "title": "diego Santiago",
-              "package": "com.google.android.apps.dynamite",
-              "text": "prueba", // TODO texto duplicado
-              "textLines": "",
-              "group": false, // TODO
-              "onGoing": false,
-              "actions": [
-                  {
-                      "title": "Leído"
-                  },
-                  {
-                      "title": "Responder"
-                  }
-              ]
-          }/*
-      }
-  /*     main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech done
-      main.be2ec36097e6051c.js:1 speechManager.synthText
-      main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech start
-      main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech done
-      main.be2ec36097e6051c.js:1 checkRecognizer On????
-      main.be2ec36097e6051c.js:1 checkQuestion On???? undefined
-      main.be2ec36097e6051c.js:1 SpeechManagerQuestion [object Object]
-      main.be2ec36097e6051c.js:1 enableRecognizer -----------> [object Object]
-      main.be2ec36097e6051c.js:1 ****** speechManager -> senbResponse
-      98.9bb71c55f74ba6a3.js:1 response: false */
-    }
-  }
-
-  processSystemui(value: any) {
-    /*   { 'notification': { 'id': '-1|com.android.systemui|10006|null|10181', 'title': 'Carga completada', 'package': 'com.android.systemui',
-    'text': 'La batería está llena', 'textLines': '', 'group': false, 'onGoing': false } }
-     */
-  }
-
-  private async processGMail(value: any) {
-    if (!value.notification.group && !this.bussyNots) { //TODO meter en una cola las notificaciones y procesarlas en lote
-      this.bussyNots = true;
-      await this.speechManager.synthText(`Nuevo correo de ${value.notification.title} con asunto ${value.notification.text}`);
-      const response = await this.speechManager.checkQuestion('processGMail', '¿quieres volver a escuchar el mensaje?');
-      console.log('response: ' + response);
-      if (response) {
-        await this.processGMail(value);
-      }
+    } catch (err) {
+      console.log('notificationHandler error: ' + JSON.stringify(err, null, 3));
       this.bussyNots = false;
     }
-    /*
 
-notification: {
-    "notification": {
-        "id": "0|com.google.android.gm|0|gig:377044571:PRIORITY_INBOX_IMPORTANT|10145",
-        "title": "mí",
-        "package": "com.google.android.gm",
-        "text": "Re: prueba",
-        "textLines": "",
-        "group": true,
-        "onGoing": false,
-        "actions": [
-            {
-                "title": "Archivar"
-            },
-            {
-                "title": "Responder"
-            }
-        ]
+    console.error('nots_queue-> LENGTH: ' + nots_queue.length);
+    if (nots_queue.length > 0) {
+      const newNot = this.queuePop();
+      console.error('nots_queue-> queuePop' + JSON.stringify(newNot));
+      this.bussyNots = false;
+      if (newNot && newNot.length) {
+      await this.notificationHandler(newNot, true);
+      }
+    } else {
+      this.bussyNots = false;
     }
-}
- notification: {
-    "notification": {
-        "id": "0|com.google.android.gm|2017564114|gig:377044571:PRIORITY_INBOX_IMPORTANT|10145",
-        "title": "mí",
-        "package": "com.google.android.gm",
-        "text": "Re: prueba",
-        "textLines": "",
-        "group": false,
-        "onGoing": false,
-        "actions": [
-            {
-                "title": "Archivar"
-            },
-            {
-                "title": "Responder"
-            }
-        ]
-    }
-} */
   }
 
-  private async processWhatsapp(value: any) {
+
+  //********************* COLA DE NOTIFICACIONES ********************/
+  private queuePush(notificacion: INotificacion) {
+    console.log(' nots_queue.push() ->  ' + JSON.stringify(nots_queue));
+    nots_queue.push(notificacion);
+  }
+
+  private queuePop(): any {
+    console.log(' nots_queue.pop ->  ' + JSON.stringify(nots_queue));
+    return nots_queue.pop();
+
+  }
+  //******************************************************************/
+
+
+  private async processNotification(value: any) {
+    console.log('processNotification!!!!:  -------> ');
     if (!value.notification.group) {
-      const msg = value.notification.textLines || value.notification.text;
-      await this.speechManager.synthText('whatsapp de ' + value.notification.title + '.: ' + msg);
-      const response = await this.speechManager.checkQuestion('processGMail', '¿quieres volver a escuchar el mensaje?');
-      console.log('response: ' + response);
-      if (response) {
-        await this.processGMail(value);
-      }
+      const PKG = value.notification.package;
+      let msg = '';
+      PKG !== 'com.google.android.apps.dynamite' || (msg = `Nuevo Gchat de ${value.notification.title} con asunto ${value.notification.text}`);
+      PKG !== 'com.google.android.gm' || (msg = `Nuevo correo de ${value.notification.title} con asunto ${value.notification.text}`);
+      PKG !== 'com.whatsapp' || (msg = 'whatsapp de ' + value.notification.title + '.: ' + (value.notification.textLines || value.notification.text));
+      await this.speechManager.synthText(msg);
+      console.log('finish synth!!!!!!!!!!!!: ');
+      /*   TODO no para de stopRecognizer
+            const response = await this.speechManager.checkQuestion('processGMail', '¿quieres volver a escuchar el mensaje?');
+            if (response) {
+              this.processNotification(value);
+              console.log('processNotification!!!!:  -------> ');
+            }
+            console.log('<-------  processNotification!!!!: '); */
     }
+
+
+    /*  notification: {
+        "notification": {
+            "id": "0|com.google.android.gm|0|377044571::SUMMARY::Chat|10145",
+            "title": "",
+            "package": "com.google.android.gm",
+            "text": "",
+            "textLines": "",
+            "group": true, // TODO
+            "onGoing": false
+        }
+    }
+    notification: {
+        "notification": {
+            "id": "0|com.google.android.gm|0|377044571::a:AT_MENTION_STUBBY_HUB_DYNAMITE:/chime/space/vkmqZ4AAAAE|10145",
+            "title": "diego Santiago",
+            "package": "com.google.android.gm",
+            "text": "prueba", //TODO texto
+            "textLines": "",
+            "group": false, // TODO
+            "onGoing": false,
+            "actions": [
+                {
+                    "title": "Leído"
+                },
+                {
+                    "title": "Responder"
+                }
+            ]
+        }
+    }
+    //     main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech start
+    notification: {
+        "notification": {
+            "id": "0|com.google.android.apps.dynamite|0|377044571::SUMMARY::206ffa5b1e18220e2ec446a734206ed7|10249",
+            "title": "",
+            "package": "com.google.android.apps.dynamite",
+            "text": "",
+            "textLines": "",
+            "group": true, // TODO
+            "onGoing": false
+        }
+    }
+    notification: {
+        "notification": {
+            "id": "0|com.google.android.apps.dynamite|0|377044571::a:AT_MENTION_STUBBY_HUB_DYNAMITE:/chime/space/vkmqZ4AAAAE|10249",
+            "title": "diego Santiago",
+            "package": "com.google.android.apps.dynamite",
+            "text": "prueba", // TODO texto duplicado
+            "textLines": "",
+            "group": false, // TODO
+            "onGoing": false,
+            "actions": [
+                {
+                    "title": "Leído"
+                },
+                {
+                    "title": "Responder"
+                }
+            ]
+        }/*
+    }
+    /*     main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech done
+    main.be2ec36097e6051c.js:1 speechManager.synthText
+    main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech start
+    main.be2ec36097e6051c.js:1  ***** SpeechManagerSpeech speech done
+    main.be2ec36097e6051c.js:1 checkRecognizer On????
+    main.be2ec36097e6051c.js:1 checkQuestion On???? undefined
+    main.be2ec36097e6051c.js:1 SpeechManagerQuestion [object Object]
+    main.be2ec36097e6051c.js:1 enableRecognizer -----------> [object Object]
+    main.be2ec36097e6051c.js:1 ****** speechManager -> senbResponse
+    98.9bb71c55f74ba6a3.js:1 response: false */
+
+
+
+
     /* notification: {
     "notification": {
         "id": "0|com.whatsapp|1|WaXGYcGzFUVX10WjvOc48MmszCxB8oTZ1fKMCUxk09I=\n|10240",
@@ -587,8 +549,8 @@ notification: {
             }
         ]
     }
-}
-notification: {
+  }
+  notification: {
     "notification": {
         "id": "0|com.whatsapp|1|null|10240",
         "title": "Charlie Ava Martínez",
@@ -598,7 +560,7 @@ notification: {
         "group": true,
         "onGoing": false
     }
-} */
+  } */
   }
 
   private async getNotifications() {

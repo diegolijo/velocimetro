@@ -1,5 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+
+export interface INotificacion {
+    notification: {
+        id: string;
+        title: string;
+        package: string;
+        text: string;
+        textLines: string;
+        group: boolean;
+        onGoing: boolean;
+        actions?: [
+            {
+                title: string;
+            },
+            {
+                title: string;
+            }
+        ];
+    };
+};
 
 declare const cordova: any;
 
@@ -13,6 +35,7 @@ export class NotificationListener {
 
     public listen() {
         cordova.plugins.NotificationListener.listen((n) => {
+
             this.notificationObservable.next({ notification: n });
         }, (e) => {
             this.notificationObservable.next({ error: e });

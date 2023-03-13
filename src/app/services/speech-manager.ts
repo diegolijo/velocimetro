@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Injectable } from '@angular/core';
 import { SpeechToText } from 'angular-speech-to-text';
 
 export interface IVoice { name: string; locale: string; requiresNetwork: boolean; latency: number; quality: number }
 
-declare const glPrpts: any;
-const CHECK_QUESTION_BUSSY = 'Se está esperando por una respuesta en punto de la ejecución! ';
+declare const globalSettings: any;
+const CHECK_QUESTION_BUSSY = 'Se está esperando por una respuesta en la ejecución! ';
 const DEFAULT_LANG = 'es';
 @Injectable()
 export class SpeechManager {
@@ -15,28 +16,40 @@ export class SpeechManager {
     private checkQuestionIsBussy: any;
     private currentLanguage = DEFAULT_LANG;
 
-    private globalSttgs = glPrpts;
+    private globalSettings = globalSettings;
     constructor(
         private speechToText: SpeechToText,
     ) { }
 
     public async startRecognizer(lang: string) {
         console.log('***** startRecognizer *****');
-        this.globalSttgs.lang = this.currentLanguage = lang;
+        this.globalSettings.lang = this.currentLanguage = lang;
         if (!(await this.speechToText.isEnable())) {
             await this.speechToText.enableRecognizer(lang);
         };
         this.speechToText.startRecognizer();
-        this.globalSttgs.isRecording = this.isRecording = true;
-
+        this.globalSettings.isRecording = this.isRecording = true;
         // TODO espear a la devolucion de la capa nativa
     }
 
     public stopRecognizer() {
-        this.globalSttgs.isRecording = this.isRecording = false;
-        this.speechToText.stopy();
-        this.speechToText.synthText('', true);
-        // TODO espear a la devolucion de la capa nativa
+        this.globalSettings.isRecording = this.isRecording = false;
+        return new Promise((resolve, reject) => {
+            this.speechToText.subscrbeToRecognizer('stop',
+                async (value: any) => {
+                    console.log('+++++++++++ stopRecognizer ' + JSON.stringify(value));
+                    console.log(JSON.stringify('value stopRecognizer.subscrbeToRecognizer **** ' + value));
+                    if (value.action === 'recognize' && value.result === 'stop') {
+                        this.speechToText.unsubscribeToRecognizer('stop');
+                        resolve(true);
+                    }
+                },
+                (err: any) => {
+                    console.log('error stopRecognizer.subscrbeToRecognizer **** ' + JSON.stringify(err));
+                    reject(err);
+                });
+            this.speechToText.stopRecognizer();
+        });
     }
 
     public synthText(msg: string): Promise<boolean> {
@@ -57,7 +70,7 @@ export class SpeechManager {
                                 break;
                         }
                     }, (err => {
-
+                        console.log('error subscrbeToSyntesizer ' + err);
                     }));
             } catch (err) {
                 reject(err);
@@ -68,23 +81,23 @@ export class SpeechManager {
     public checkQuestion(id: string, question?: string): Promise<boolean> {
         return new Promise(async (resolve) => {
             try {
+                console.log('checkQuestion. checkMultipleQuestions? ??');
                 try {
                     await this.checkMultipleQuestions(id);
                 } catch (err: any) {
                     console.log(err);
                     return resolve(false);
                 }
+                console.log('checkQuestion .stopRecognizer');
                 await this.stopRecognizer();
-
-
                 if (question) {
-                    console.log('speechManager.synthText');
+                    console.log('checkQuestion .synthText');
                     await this.synthText(question);// no espera
                 }
-                console.log('llefa aqui miestras aquiiiiiiiii???');
+                console.log('checkQuestion checkRecognizerOn???');
 
                 const on = await this.checkRecognizerOn();
-                this.globalSttgs.checkRecognizerOn = on;
+                this.globalSettings.checkRecognizerOn = on;
                 console.log('checkQuestion On???? ' + on);
                 this.speechToText.subscrbeToRecognizer(id,
                     async (value: any) => {
@@ -115,17 +128,19 @@ export class SpeechManager {
 
     private sendQuestionResponse(id: string, rs: (value: any) => void, val: boolean, delay?: number) {
         setTimeout(() => {
-            console.log('****** speechManager -> senbResponse');
-            this.speechToText.unsubscribeToRecognizer(id,
-                (err => { console.log(err); }));
-            this.checkQuestionIsBussy && delete this.checkQuestionIsBussy;
-            rs(val);
+            try {
+                console.log('****** speechManager -> senbResponse');
+                this.speechToText.unsubscribeToRecognizer(id);
+                this.checkQuestionIsBussy && delete this.checkQuestionIsBussy;
+                rs(val);
+            } catch (err) {
+                rs(null);
+            }
         }, delay || 0);
     }
 
     private sendSynthComplete(msg: string, resolve: (reason?: any) => void, status: any) {
-     /*    this.speechToText.unsubscribeToSyntesizer(msg,
-            err => { console.log(err); }); */
+        this.speechToText.unsubscribeToSyntesizer(msg);
         resolve(status);
     }
 
@@ -142,23 +157,14 @@ export class SpeechManager {
                 async (value: any) => {
                     console.log('in subscrbeToRecognizer -----------> ' + JSON.stringify(value));
                     if (value.action === 'recognize' && value.result === 'play') {
-                        this.speechToText.unsubscribeToRecognizer('checkRecognizerOn',
-                            (err) => {
-                                console.error('unsubscribeToRecognizer ' + err);
-                            });
+                        this.speechToText.unsubscribeToRecognizer('checkRecognizerOn');
                         rs(true);
                         console.log('ction === recogni -----------> ' + JSON.stringify(value));
                         return;
                     }
                 },
                 (err: any) => {
-                    this.speechToText.unsubscribeToRecognizer('checkRecognizerOn',
-                        (error) => {
-                            console.error('unsubscribeToRecognizer ' + JSON.stringify(err) + JSON.stringify(error));
-                            rs(true);
-                            console.log(' err subscrbeToRecognizer -----------> ' + JSON.stringify(error));
-                            return;
-                        });
+                    this.speechToText.unsubscribeToRecognizer('checkRecognizerOn');
                     rj(err);
                 });
             /*             } catch (err) {
@@ -177,18 +183,17 @@ export class SpeechManager {
     private checkMultipleQuestions(id: string) {
         new Promise(async (rs, rj) => {
             try {
-                console.log('this.checkQuestionIsBussy ' + this.checkQuestionIsBussy);
                 if (this.checkQuestionIsBussy) {
+                    console.log('this.checkQuestionIsBussy ' + 'true');
                     rj(CHECK_QUESTION_BUSSY + id);
+                    this.globalSettings.checkQuestionIsBussy = this.checkQuestionIsBussy = id;
+                    return;
                 }
-                this.globalSttgs.checkQuestionIsBussy = this.checkQuestionIsBussy = id;
+                console.log('this.checkQuestionIsBussy ' + 'false');
                 rs(true);
-                // TODO
             } catch (err) {
-                rs(true);
+                rj(true);
             }
         });
-
-
     }
 }
